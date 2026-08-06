@@ -1,0 +1,846 @@
+<title>오르카아이티 AI 도입 의향 조사</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --ink: #1b2340;
+    --ink-soft: #454c68;
+    --muted: #6b6f76;
+    --paper: #f6f5f1;
+    --card: #ffffff;
+    --line: #e3e1da;
+    --line-strong: #cfcdc4;
+    --accent: #a8781f;
+    --accent-soft: #f1e6d2;
+    --accent-ink: #201404;
+    --required: #a83a32;
+    --focus: #1b2340;
+    --radio-bg: #fbfaf7;
+    font-size: 16px;
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9e7df;
+    --ink-soft: #c7c4ba;
+    --muted: #9b9891;
+    --paper: #14151a;
+    --card: #1c1e26;
+    --line: #2c2e37;
+    --line-strong: #3a3c47;
+    --accent: #d7a94a;
+    --accent-soft: #362c17;
+    --accent-ink: #221a08;
+    --required: #e08579;
+    --focus: #d7a94a;
+    --radio-bg: #22242d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9e7df;
+      --ink-soft: #c7c4ba;
+      --muted: #9b9891;
+      --paper: #14151a;
+      --card: #1c1e26;
+      --line: #2c2e37;
+      --line-strong: #3a3c47;
+      --accent: #d7a94a;
+      --accent-soft: #362c17;
+      --accent-ink: #221a08;
+      --required: #e08579;
+      --focus: #d7a94a;
+      --radio-bg: #22242d;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+  /* top progress rail */
+  .rail {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--paper);
+    padding: 14px 0 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .rail-inner { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+  .rail-track {
+    height: 4px; border-radius: 2px; background: var(--line);
+    overflow: hidden;
+  }
+  .rail-fill {
+    height: 100%; width: 0%; background: var(--accent);
+    transition: width .25s ease;
+  }
+  .rail-label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--muted); margin-top: 6px;
+    letter-spacing: .02em;
+  }
+  .rail-brand { font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-size: 11px; }
+
+  main { flex: 1; display: flex; flex-direction: column; }
+
+  /* wizard steps */
+  #stepArea { flex: 1; padding: 40px 0 20px; }
+  .step { display: none; }
+  .step.active { display: block; animation: fadein .2s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow {
+    font-size: 12px; letter-spacing: .12em; color: var(--accent);
+    font-weight: 700; text-transform: uppercase;
+  }
+  h1.title {
+    font-size: 26px; line-height: 1.35; color: var(--ink);
+    margin: 10px 0 6px; text-wrap: balance; font-weight: 800;
+  }
+  .sub {
+    color: var(--muted); font-size: 14.5px; margin: 0 0 22px;
+  }
+  hr.rule {
+    border: none; border-top: 1px solid var(--line-strong); margin: 22px 0;
+  }
+
+  .letter-body p { margin: 0 0 14px; color: var(--ink-soft); font-size: 15px; }
+  .signature {
+    text-align: right; margin-top: 18px; font-size: 14.5px; color: var(--ink-soft);
+  }
+  .signature .contact { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .placeholder-note {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    background: var(--accent-soft); color: var(--accent-ink); font-size: 12.5px;
+  }
+
+  .part-num {
+    font-size: 12px; letter-spacing: .1em; color: var(--muted); font-weight: 700; display: block; margin-bottom: 6px;
+  }
+  h2.qtitle {
+    font-size: 19px; margin: 0 0 4px; color: var(--ink); font-weight: 800; text-wrap: balance;
+  }
+  .qmeta { font-size: 12.5px; color: var(--muted); margin: 4px 0 18px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 22px 24px; margin-top: 8px;
+  }
+
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  label.flabel {
+    display: block; font-size: 14px; font-weight: 700; color: var(--ink);
+    margin-bottom: 8px;
+  }
+  label.flabel .req { color: var(--required); margin-left: 3px; }
+  .fhint { font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 2px; display:block; }
+
+  input[type="text"], input[type="email"], input[type="tel"] {
+    width: 100%; padding: 10px 12px; font-size: 14.5px;
+    border: 1px solid var(--line-strong); border-radius: 7px;
+    background: var(--radio-bg); color: var(--ink); font-family: inherit;
+  }
+  input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+  .opt-list { display: flex; flex-direction: column; gap: 9px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 11px;
+    padding: 13px 14px; border: 1px solid var(--line); border-radius: 9px;
+    background: var(--radio-bg); cursor: pointer; font-size: 15px;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .opt:hover { border-color: var(--line-strong); }
+  .opt.checked { border-color: var(--accent); background: var(--accent-soft); }
+  .opt input { margin-top: 3px; accent-color: var(--accent); flex: none; }
+  .opt .opt-text { flex: 1; }
+  .opt input.inline-text {
+    margin-top: 0; width: auto; flex: 1; min-width: 90px;
+    padding: 4px 8px; font-size: 13.5px;
+  }
+
+  .inline-fields { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .inline-fields input[type="text"] { width: 90px; flex: none; }
+
+  .consent-box {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 14px 16px; border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--radio-bg); font-size: 13.5px; color: var(--ink-soft);
+  }
+  .consent-box input { margin-top: 3px; accent-color: var(--accent); }
+
+  .step-error {
+    color: var(--required); font-size: 13px; margin: 14px 0 0; text-align: center;
+    display: none;
+  }
+
+  /* nav buttons — anchored to the bottom of each step's own card, not fixed to the viewport */
+  .navbar {
+    margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line);
+  }
+  .navbar-inner {
+    display: flex; justify-content: center; gap: 12px;
+  }
+  .navbar button {
+    font-family: inherit; font-size: 15px; font-weight: 700;
+    border-radius: 9px; padding: 14px; cursor: pointer;
+    width: 150px;
+  }
+  #prevBtn {
+    background: var(--radio-bg); color: var(--ink-soft); border: 1px solid var(--line-strong);
+  }
+  #nextBtn {
+    border: none; background: var(--accent); color: var(--accent-ink);
+  }
+  #nextBtn:hover, #prevBtn:hover { filter: brightness(1.05); }
+
+  /* result screen */
+  #resultScreen { display: none; padding: 60px 0 40px; }
+  #resultScreen h2 { font-size: 21px; margin-bottom: 6px; }
+  #resultScreen p.lead { color: var(--muted); font-size: 14.5px; margin-bottom: 22px; }
+  .summary-box {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; font-size: 13.5px; white-space: pre-wrap; color: var(--ink-soft);
+    max-height: 420px; overflow-y: auto; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    line-height: 1.55;
+  }
+  .action-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .action-row button {
+    flex: 1; min-width: 150px; padding: 12px; font-size: 14px; font-weight: 700;
+    border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid var(--line-strong);
+    background: var(--card); color: var(--ink);
+  }
+  .action-row button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .note-box {
+    margin-top: 22px; padding: 14px 16px; border-radius: 8px;
+    background: var(--accent-soft); color: var(--accent-ink); font-size: 13px;
+  }
+  /* thank-you screen */
+  #thankYouScreen { display: none; padding: 90px 0 60px; text-align: center; }
+  #thankYouScreen h2 { font-size: 22px; margin-bottom: 10px; }
+  #thankYouScreen p.lead { color: var(--muted); font-size: 14.5px; margin-bottom: 28px; }
+  #thankYouScreen button {
+    font-family: inherit; font-size: 15px; font-weight: 700;
+    border-radius: 9px; padding: 14px 32px; cursor: pointer;
+    border: none; background: var(--accent); color: var(--accent-ink);
+  }
+  #thankYouScreen button:hover { filter: brightness(1.05); }
+
+  /* scroll arrows — hugging the content column's right edge (shown only when the current screen overflows the viewport) */
+  .scroll-nav {
+    position: fixed; left: calc(50% + 360px + 14px); top: 50%; transform: translateY(-50%);
+    display: none; flex-direction: column; gap: 10px; z-index: 15;
+  }
+  .scroll-nav button {
+    width: 48px; height: 48px; border-radius: 10px; padding: 4px;
+    border: 1px solid var(--line-strong); background: var(--card); color: var(--ink-soft);
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.14); transition: filter .15s ease; font-family: inherit;
+  }
+  .scroll-nav button .arrow-icon { font-size: 13px; line-height: 1; }
+  .scroll-nav button .arrow-label { font-size: 9.5px; line-height: 1; font-weight: 700; letter-spacing: -.02em; }
+  .scroll-nav button:hover { filter: brightness(1.08); }
+  @media (max-width: 820px) {
+    .scroll-nav { left: auto; right: 8px; }
+  }
+  @media (max-width: 480px) {
+    .scroll-nav button { width: 40px; height: 40px; }
+    .scroll-nav button .arrow-icon { font-size: 11px; }
+    .scroll-nav button .arrow-label { font-size: 8.5px; }
+  }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 20px;
+    font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 20;
+  }
+  .toast.show { opacity: 1; }
+</style>
+
+<div class="rail" id="topRail">
+  <div class="rail-inner">
+    <div class="rail-track"><div class="rail-fill" id="railFill"></div></div>
+    <div class="rail-label">
+      <span class="rail-brand">오르카아이티 · AI사업부</span>
+      <span id="railStep">시작 전</span>
+    </div>
+  </div>
+</div>
+
+<main id="wizard">
+  <div id="stepArea" class="wrap">
+
+    <!-- INTRO -->
+    <div class="step card active" data-step="intro">
+      <div class="eyebrow">오르카아이티 · AI사업부</div>
+      <h1 class="title">고객 AI 도입 의향 조사 안내</h1>
+      <p class="sub">응답에는 약 5분이 소요됩니다. 수집된 정보는 본 조사 목적 외에는 사용하지 않습니다.</p>
+      <hr class="rule" />
+      <div class="letter-body">
+        <p>안녕하십니까. 오르카아이티는 귀사의 ERP 파트너로서, 최근 확산되고 있는 AI 도입 흐름에 대한 귀사의 의견을 여쭙고자 이 서한을 보내드립니다.</p>
+        <p>정부는 매년 초 &ldquo;스마트공장구축 - 제조AI 특화&rdquo;(통칭 AI-Agent 지원사업) 공고를 통해 AI 도입 기업에 사업비 일부를 지원합니다. 2026년 선정 사례 기준 총사업비 약 4억원 중 최대 2억원 수준 지원(2027년도 공고는 아직 미발표).</p>
+        <p>이번 설문은 귀사의 AI 도입 관심도와 계획을 파악하고, 필요하신 경우 저희 AI사업부가 정부 지원사업 신청을 처음부터 함께 안내해 드리기 위한 것입니다. 참여해 주시면 감사하겠습니다.</p>
+      </div>
+      <div class="signature">
+        <div>오르카아이티 정춘용 부사장 배상</div>
+        <div class="contact">문의: 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com <span class="placeholder-note">임시 — 발송 전 확정 필요</span></div>
+      </div>
+    </div>
+
+    <!-- BASIC INFO -->
+    <div class="step card" data-step="basic">
+      <span class="part-num">PART 3</span>
+      <h2 class="qtitle">응답자 기본정보</h2>
+      <div class="qmeta">아래 항목을 입력해 주십시오.</div>
+        <div class="field">
+          <label class="flabel">회사명<span class="req">*</span></label>
+          <input type="text" id="q_company" />
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label class="flabel">담당자 성명<span class="req">*</span></label>
+            <input type="text" id="q_name" />
+          </div>
+          <div class="field">
+            <label class="flabel">직책</label>
+            <input type="text" id="q_title" />
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label class="flabel">연락처(전화)<span class="req">*</span></label>
+            <input type="tel" id="q_phone" />
+          </div>
+          <div class="field">
+            <label class="flabel">이메일<span class="req">*</span></label>
+            <input type="email" id="q_email" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="flabel">업종<span class="req">*</span></label>
+          <div class="opt-list" data-group="industry">
+            <label class="opt"><input type="radio" name="industry" value="제조업"><span class="opt-text">제조업 <input type="text" class="inline-text" placeholder="대표제품" data-subfield="industry_detail"></span></label>
+            <label class="opt"><input type="radio" name="industry" value="유통/서비스"><span class="opt-text">유통/서비스</span></label>
+            <label class="opt"><input type="radio" name="industry" value="건설"><span class="opt-text">건설</span></label>
+            <label class="opt"><input type="radio" name="industry" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="industry_etc"></span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="flabel">종업원 수<span class="req">*</span></label>
+          <div class="opt-list" data-group="headcount">
+            <label class="opt"><input type="radio" name="headcount" value="10인 미만"><span class="opt-text">10인 미만</span></label>
+            <label class="opt"><input type="radio" name="headcount" value="10~49인"><span class="opt-text">10~49인</span></label>
+            <label class="opt"><input type="radio" name="headcount" value="50~99인"><span class="opt-text">50~99인</span></label>
+            <label class="opt"><input type="radio" name="headcount" value="100~299인"><span class="opt-text">100~299인</span></label>
+            <label class="opt"><input type="radio" name="headcount" value="300인 이상"><span class="opt-text">300인 이상</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="flabel">연매출 규모(대략)<span class="req">*</span></label>
+          <div class="opt-list" data-group="revenue">
+            <label class="opt"><input type="radio" name="revenue" value="50억 미만"><span class="opt-text">50억 미만</span></label>
+            <label class="opt"><input type="radio" name="revenue" value="50~100억"><span class="opt-text">50~100억</span></label>
+            <label class="opt"><input type="radio" name="revenue" value="100~300억"><span class="opt-text">100~300억</span></label>
+            <label class="opt"><input type="radio" name="revenue" value="300~500억"><span class="opt-text">300~500억</span></label>
+            <label class="opt"><input type="radio" name="revenue" value="500억 이상"><span class="opt-text">500억 이상</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="flabel">현재 사용 중인 ERP<span class="req">*</span></label>
+          <div class="opt-list" data-group="erp">
+            <label class="opt"><input type="radio" name="erp" value="영림원 K-System"><span class="opt-text">영림원 K-System</span></label>
+            <label class="opt"><input type="radio" name="erp" value="QAD ERP"><span class="opt-text">QAD ERP</span></label>
+            <label class="opt"><input type="radio" name="erp" value="SAP ERP"><span class="opt-text">SAP ERP</span></label>
+            <label class="opt"><input type="radio" name="erp" value="오라클(Oracle) ERP"><span class="opt-text">오라클(Oracle) ERP</span></label>
+            <label class="opt"><input type="radio" name="erp" value="더존(Douzone) ERP"><span class="opt-text">더존(Douzone) ERP</span></label>
+            <label class="opt"><input type="radio" name="erp" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="erp_etc"></span></label>
+          </div>
+        </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="step card" data-step="q1">
+      <span class="part-num">PART 4 · Q1</span>
+      <h2 class="qtitle">귀사는 ERP시스템을 어느 정도 잘 활용하고 계십니까?</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q1">
+        <label class="opt"><input type="radio" name="q1" value="전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다"><span class="opt-text">전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다"><span class="opt-text">주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="기본적인 데이터 입력·조회 수준에 머물러 있다"><span class="opt-text">기본적인 데이터 입력·조회 수준에 머물러 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="도입은 했으나 전반적으로 활용도가 낮은 편이다"><span class="opt-text">도입은 했으나 전반적으로 활용도가 낮은 편이다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="잘 모르겠다 / 담당 업무가 아니다"><span class="opt-text">잘 모르겠다 / 담당 업무가 아니다</span></label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="step card" data-step="q2">
+      <span class="part-num">PART 4 · Q2</span>
+      <h2 class="qtitle">귀사는 ERP 외에 AI시스템 도입에 관심이 있으십니까?</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q2">
+        <label class="opt"><input type="radio" name="q2" value="매우 관심이 많다 (구체적으로 검토·조사 중이다)"><span class="opt-text">매우 관심이 많다 (구체적으로 검토·조사 중이다)</span></label>
+        <label class="opt"><input type="radio" name="q2" value="관심이 있다 (아직 구체적인 계획은 없다)"><span class="opt-text">관심이 있다 (아직 구체적인 계획은 없다)</span></label>
+        <label class="opt"><input type="radio" name="q2" value="보통이다 (필요성은 느끼나 우선순위가 높지 않다)"><span class="opt-text">보통이다 (필요성은 느끼나 우선순위가 높지 않다)</span></label>
+        <label class="opt"><input type="radio" name="q2" value="관심이 적은 편이다"><span class="opt-text">관심이 적은 편이다</span></label>
+        <label class="opt"><input type="radio" name="q2" value="전혀 관심이 없다"><span class="opt-text">전혀 관심이 없다</span></label>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="step card" data-step="q3">
+      <span class="part-num">PART 4 · Q3</span>
+      <h2 class="qtitle">AI시스템을 실제 예산을 들여 도입한다면, 그 시기는 언제로 계획하십니까?</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q3">
+        <label class="opt"><input type="radio" name="q3" value="이미 도입했거나 진행 중이다"><span class="opt-text">이미 도입했거나 진행 중이다</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2026년 내 (올해)"><span class="opt-text">2026년 내 (올해)</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2027년 이내"><span class="opt-text">2027년 이내</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2028년 이내"><span class="opt-text">2028년 이내</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2029년 이후 또는 아직 계획이 없다"><span class="opt-text">2029년 이후 또는 아직 계획이 없다</span></label>
+        <label class="opt"><input type="radio" name="q3" value="아직 시기를 정하지 못했다"><span class="opt-text">아직 시기를 정하지 못했다</span></label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="step card" data-step="q4">
+      <span class="part-num">PART 4 · Q4</span>
+      <h2 class="qtitle">AI시스템을 도입한다면 어느 분야에 우선 도입하려 하십니까?</h2>
+      <div class="qmeta">복수 선택</div>
+      <div class="opt-list" data-group="q4" data-multi="true">
+        <label class="opt"><input type="checkbox" name="q4" value="생산/제조 현장 (설비 예지보전·품질검사·공정 최적화 등)"><span class="opt-text">생산/제조 현장 (설비 예지보전·품질검사·공정 최적화 등)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="구매/자재/재고관리 (SCM)"><span class="opt-text">구매/자재/재고관리 (SCM)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="영업/수요예측"><span class="opt-text">영업/수요예측</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="회계/재무"><span class="opt-text">회계/재무</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="인사/총무"><span class="opt-text">인사/총무</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="고객상담/CS"><span class="opt-text">고객상담/CS</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="경영진 의사결정 지원 (BI·경영 리포트)"><span class="opt-text">경영진 의사결정 지원 (BI·경영 리포트)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q4_etc"></span></label>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="step card" data-step="q5">
+      <span class="part-num">PART 4 · Q5</span>
+      <h2 class="qtitle">AI 도입 이후 가장 기대하는 효과는 무엇입니까?</h2>
+      <div class="qmeta">복수 선택</div>
+      <div class="opt-list" data-group="q5" data-multi="true">
+        <label class="opt"><input type="checkbox" name="q5" value="생산성 향상 / 인력 효율화"><span class="opt-text">생산성 향상 / 인력 효율화</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="불량률 감소 / 품질 향상"><span class="opt-text">불량률 감소 / 품질 향상</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="데이터 기반 의사결정 속도 향상"><span class="opt-text">데이터 기반 의사결정 속도 향상</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="비용 절감"><span class="opt-text">비용 절감</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="신규 매출 / 사업기회 창출"><span class="opt-text">신규 매출 / 사업기회 창출</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="업무 표준화 및 프로세스 개선"><span class="opt-text">업무 표준화 및 프로세스 개선</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q5_etc"></span></label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="step card" data-step="q6">
+      <span class="part-num">PART 4 · Q6</span>
+      <h2 class="qtitle">정부는 2027년 스마트공장 제조특화AI사업(AI-Agent개발 포함)을 통해 제조기업이 AI시스템을 도입하는데 사업비 50%를 지원하고 있습니다.</h2>
+      <div class="qmeta">2026년 10월말 사업공고, 2027년 1월 초 신청예정 — 이러한 정부 지원사업에 참여하실 의향이 있으십니까? · 단일 선택</div>
+      <div class="opt-list" data-group="q6">
+        <label class="opt"><input type="radio" name="q6" value="매우 적극적으로 참여하고 싶다"><span class="opt-text">매우 적극적으로 참여하고 싶다</span></label>
+        <label class="opt"><input type="radio" name="q6" value="조건(지원 규모·자기부담 등)에 따라 참여를 검토하겠다"><span class="opt-text">조건(지원 규모·자기부담 등)에 따라 참여를 검토하겠다</span></label>
+        <label class="opt"><input type="radio" name="q6" value="아직 판단하기 이르다 (추가 정보가 필요하다)"><span class="opt-text">아직 판단하기 이르다 (추가 정보가 필요하다)</span></label>
+        <label class="opt"><input type="radio" name="q6" value="참여 의사가 없다"><span class="opt-text">참여 의사가 없다</span></label>
+        <label class="opt"><input type="radio" name="q6" value="기타의견"><span class="opt-text">기타의견 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q6_etc"></span></label>
+      </div>
+    </div>
+
+    <!-- Q6-1 -->
+    <div class="step card" data-step="q6_1">
+      <span class="part-num">PART 4 · Q6-1</span>
+      <h2 class="qtitle">과거 정부 지원사업(스마트공장 구축, 제조업 R&amp;D 등)에 신청하거나 선정된 경험이 있으십니까?</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q6_1">
+        <label class="opt"><input type="radio" name="q6_1" value="있다 — 선정되어 사업을 수행한 경험이 있다"><span class="opt-text">있다 — 선정되어 사업을 수행한 경험이 있다 <input type="text" class="inline-text" placeholder="아신다면: 예) 2023년, OO스마트공장구축사업" data-subfield="q6_1_detail"></span></label>
+        <label class="opt"><input type="radio" name="q6_1" value="있다 — 신청했으나 선정되지 못한 경험이 있다"><span class="opt-text">있다 — 신청했으나 선정되지 못한 경험이 있다</span></label>
+        <label class="opt"><input type="radio" name="q6_1" value="없다 — 신청해본 적이 없다"><span class="opt-text">없다 — 신청해본 적이 없다</span></label>
+        <label class="opt"><input type="radio" name="q6_1" value="없다 — 관련 정보를 잘 모른다"><span class="opt-text">없다 — 관련 정보를 잘 모른다</span></label>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="step card" data-step="q7">
+      <span class="part-num">PART 4 · Q7</span>
+      <h2 class="qtitle">저희 오르카아이티 AI사업부가 정부 지원사업 신청 준비부터 AI 프로젝트 수행까지 처음부터 함께 안내해 드린다면, 함께 신청하시겠습니까?</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q7">
+        <label class="opt"><input type="radio" name="q7" value="예, 적극적으로 함께 신청하고 싶다" data-followup="show"><span class="opt-text">예, 적극적으로 함께 신청하고 싶다</span></label>
+        <label class="opt"><input type="radio" name="q7" value="관심은 있으나 사전 설명(설명회·미팅)을 먼저 받아보고 싶다" data-followup="show"><span class="opt-text">관심은 있으나 사전 설명(설명회·미팅)을 먼저 받아보고 싶다</span></label>
+        <label class="opt"><input type="radio" name="q7" value="아직 결정하기 이르다" data-followup="hide"><span class="opt-text">아직 결정하기 이르다</span></label>
+        <label class="opt"><input type="radio" name="q7" value="신청 의사가 없다" data-followup="hide"><span class="opt-text">신청 의사가 없다</span></label>
+      </div>
+    </div>
+
+    <!-- Q7-1 (conditional) -->
+    <div class="step card" data-step="q7_1">
+      <span class="part-num">PART 4 · Q7-1</span>
+      <h2 class="qtitle">담당자와의 후속 미팅을 희망하시는 시기를 알려주십시오.</h2>
+      <div class="qmeta">단일 선택</div>
+      <div class="opt-list" data-group="q7_1">
+        <label class="opt"><input type="radio" name="q7_1" value="가능한 빨리 (1~2주 이내)"><span class="opt-text">가능한 빨리 (1~2주 이내)</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="1개월 이내"><span class="opt-text">1개월 이내</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="2~3개월 이내"><span class="opt-text">2~3개월 이내</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="아직 시기를 정하기 어렵다"><span class="opt-text">아직 시기를 정하기 어렵다</span></label>
+      </div>
+    </div>
+
+    <!-- FINAL -->
+    <div class="step card" data-step="final">
+      <span class="part-num">PART 5</span>
+      <h2 class="qtitle">설문에 참여해 주셔서 진심으로 감사드립니다</h2>
+      <div class="qmeta">회신 주신 내용은 담당자가 개별 확인 후 순차적으로 연락드리겠습니다.</div>
+        <p style="font-size:13px; color:var(--muted); margin-top:0;">개인정보 수집·이용 동의: 본 설문에서 수집하는 개인정보(담당자 성명·연락처)는 AI 도입 상담 및 정부 지원사업 안내 목적으로만 사용되며, 목적 달성 후 관련 법령에 따라 파기됩니다. 동의를 거부하실 수 있으며, 이 경우 후속 상담 안내가 제한될 수 있습니다.</p>
+        <label class="consent-box">
+          <input type="checkbox" id="q_consent" />
+          <span>위 내용에 동의하며, 설문에 성실히 응답합니다.<span class="req">*</span></span>
+        </label>
+    </div>
+
+    <div class="step-error" id="stepError">필수 항목(<span class="req">*</span>)을 모두 입력·선택해 주세요.</div>
+  </div>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <button id="prevBtn" type="button">이전</button>
+      <button id="nextBtn" type="button">설문 시작</button>
+    </div>
+  </div>
+</main>
+
+<div class="wrap" id="resultScreen">
+  <h2>응답이 정리되었습니다</h2>
+  <p class="lead">아래 &ldquo;이메일로 보내기&rdquo;를 누르면 메일 앱이 열립니다 — <strong>메일 앱에서 실제 전송 버튼을 눌러야</strong> 오르카아이티 AI사업부에 응답이 접수됩니다.</p>
+  <div class="summary-box" id="summaryBox"></div>
+  <div class="action-row">
+    <button class="primary" id="mailBtn">이메일로 보내기</button>
+    <button id="copyBtn">응답 내용 복사</button>
+    <button id="downloadBtn">파일로 저장</button>
+  </div>
+  <div class="note-box">문의: 오르카아이티 AI사업부 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com (임시 — 발송 전 확정 필요)</div>
+</div>
+
+<div class="wrap" id="thankYouScreen">
+  <h2>설문에 참여해 주셔서 진심으로 감사드립니다</h2>
+  <p class="lead">보내주신 의견은 오르카아이티 AI사업부가 소중히 검토한 후 순차적으로 연락드리겠습니다.</p>
+  <button id="restartBtn" type="button">처음으로 돌아가기</button>
+</div>
+
+<div class="scroll-nav" id="scrollNav">
+  <button id="scrollUpBtn" type="button" aria-label="위로 스크롤"><span class="arrow-icon">&#9650;</span><span class="arrow-label">위로</span></button>
+  <button id="scrollDownBtn" type="button" aria-label="아래로 스크롤"><span class="arrow-icon">&#9660;</span><span class="arrow-label">아래로</span></button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // 임시: 정춘용 부사장 개인 메일로 설정 — 실제 고객 발송 전 오르카아이티 공식 수신처로 교체 필요.
+  const RECEIVER_EMAIL = "spragon.yong@gmail.com";
+
+  const STEP_ORDER = ["intro", "basic", "q1", "q2", "q3", "q4", "q5", "q6", "q6_1", "q7", "q7_1", "final"];
+
+  const wizard = document.getElementById("wizard");
+  const resultScreen = document.getElementById("resultScreen");
+  const railFill = document.getElementById("railFill");
+  const railStep = document.getElementById("railStep");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const stepError = document.getElementById("stepError");
+  const navbarEl = document.querySelector(".navbar");
+  const scrollNav = document.getElementById("scrollNav");
+  const scrollUpBtn = document.getElementById("scrollUpBtn");
+  const scrollDownBtn = document.getElementById("scrollDownBtn");
+
+  let currentStep = "intro";
+
+  function updateScrollNav() {
+    const overflow = document.documentElement.scrollHeight > window.innerHeight + 8;
+    scrollNav.style.display = overflow ? "flex" : "none";
+  }
+  scrollUpBtn.addEventListener("click", () => {
+    window.scrollBy({ top: -Math.round(window.innerHeight * 0.7), behavior: "smooth" });
+  });
+  scrollDownBtn.addEventListener("click", () => {
+    window.scrollBy({ top: Math.round(window.innerHeight * 0.7), behavior: "smooth" });
+  });
+  window.addEventListener("resize", updateScrollNav);
+
+  function q7NeedsFollowup() {
+    const el = document.querySelector('input[name="q7"]:checked');
+    return !!el && el.dataset.followup === "show";
+  }
+
+  function activeSteps() {
+    return STEP_ORDER.filter((id) => id !== "q7_1" || q7NeedsFollowup());
+  }
+
+  // opt highlight + max enforcement
+  document.querySelectorAll(".opt").forEach((opt) => {
+    const input = opt.querySelector("input[type=radio], input[type=checkbox]");
+    input.addEventListener("change", () => {
+      if (input.type === "radio") {
+        document.querySelectorAll(`input[name="${input.name}"]`).forEach((sib) => {
+          sib.closest(".opt").classList.toggle("checked", sib.checked);
+        });
+      } else {
+        opt.classList.toggle("checked", input.checked);
+        enforceMax(input.name);
+      }
+      stepError.style.display = "none";
+    });
+  });
+
+  // inline-text inputs (e.g. "기타", "대표제품") auto-select their parent option when the user types into them
+  document.querySelectorAll(".opt input.inline-text").forEach((textInput) => {
+    textInput.addEventListener("input", () => {
+      const opt = textInput.closest(".opt");
+      const mainInput = opt.querySelector('input[type="radio"], input[type="checkbox"]');
+      if (mainInput && textInput.value.trim() && !mainInput.checked) {
+        mainInput.checked = true;
+        mainInput.dispatchEvent(new Event("change"));
+      }
+      stepError.style.display = "none";
+    });
+  });
+
+  function enforceMax(name) {
+    const group = document.querySelector(`.opt-list[data-group="${name}"]`);
+    if (!group) return;
+    const max = parseInt(group.dataset.max || "0", 10);
+    if (!max) return;
+    const boxes = Array.from(group.querySelectorAll(`input[name="${name}"]`));
+    const checked = boxes.filter((b) => b.checked);
+    if (checked.length > max) {
+      checked[0].checked = false;
+      checked[0].closest(".opt").classList.remove("checked");
+    }
+  }
+
+  document.querySelectorAll('input[type=text], input[type=email], input[type=tel]').forEach((el) => {
+    el.addEventListener("input", () => { stepError.style.display = "none"; });
+  });
+  document.getElementById("q_consent").addEventListener("change", () => { stepError.style.display = "none"; });
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+  function radioVal(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : "";
+  }
+  function checkboxVals(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map((el) => el.value);
+  }
+  function subfield(name) {
+    const el = document.querySelector(`[data-subfield="${name}"]`);
+    return el && el.value.trim() ? el.value.trim() : "";
+  }
+
+  const RADIO_STEPS = ["q1", "q2", "q3", "q6", "q6_1", "q7", "q7_1"];
+  const CHECKBOX_STEPS = ["q4", "q5"];
+
+  function validateStep(id) {
+    if (id === "intro") return true;
+    if (id === "final") return document.getElementById("q_consent").checked;
+    if (id === "basic") {
+      const requiredText = ["q_company", "q_name", "q_phone", "q_email"];
+      if (requiredText.some((fid) => !val(fid))) return false;
+      const requiredGroups = ["industry", "headcount", "revenue", "erp"];
+      return requiredGroups.every((g) => !!radioVal(g));
+    }
+    if (RADIO_STEPS.includes(id)) return !!radioVal(id);
+    if (CHECKBOX_STEPS.includes(id)) return checkboxVals(id).length > 0;
+    return true;
+  }
+
+  function stepLabel(id, index, total) {
+    if (id === "intro") return "시작 전";
+    if (id === "final") return "마지막 단계";
+    return "질문 " + index + " / " + (total - 2); // exclude intro & final from question count
+  }
+
+  function renderStep(id) {
+    document.querySelectorAll(".step").forEach((s) => {
+      s.classList.toggle("active", s.dataset.step === id);
+    });
+    const activeStepEl = document.querySelector(`.step[data-step="${id}"]`);
+    if (activeStepEl) activeStepEl.appendChild(navbarEl);
+    stepError.style.display = "none";
+    currentStep = id;
+
+    const steps = activeSteps();
+    const idx = steps.indexOf(id);
+    const total = steps.length;
+    const pct = total > 1 ? Math.round((idx / (total - 1)) * 100) : 0;
+    railFill.style.width = pct + "%";
+    railStep.textContent = stepLabel(id, idx, total);
+
+    prevBtn.style.visibility = id === "intro" ? "hidden" : "visible";
+
+    if (id === "intro") {
+      nextBtn.textContent = "설문 시작";
+    } else if (id === "final") {
+      nextBtn.textContent = "제출하기";
+    } else {
+      const nextId = steps[idx + 1];
+      nextBtn.textContent = nextId === "final" ? "설문 종료" : "다음";
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    updateScrollNav();
+  }
+
+  nextBtn.addEventListener("click", () => {
+    if (!validateStep(currentStep)) {
+      stepError.style.display = "block";
+      return;
+    }
+    if (currentStep === "final") {
+      submitSurvey();
+      return;
+    }
+    const steps = activeSteps();
+    const idx = steps.indexOf(currentStep);
+    renderStep(steps[idx + 1]);
+  });
+
+  prevBtn.addEventListener("click", () => {
+    const steps = activeSteps();
+    const idx = steps.indexOf(currentStep);
+    if (idx > 0) renderStep(steps[idx - 1]);
+  });
+
+  function buildSummary() {
+    const lines = [];
+    lines.push("[오르카아이티 AI 도입 의향 조사 응답]");
+    lines.push("");
+    lines.push("- 회사명: " + val("q_company"));
+    lines.push("- 담당자: " + val("q_name") + (val("q_title") ? " / " + val("q_title") : ""));
+    lines.push("- 연락처: " + val("q_phone") + " / " + val("q_email"));
+    let industry = radioVal("industry");
+    if (industry === "제조업" && subfield("industry_detail")) industry += "(" + subfield("industry_detail") + ")";
+    if (industry === "기타" && subfield("industry_etc")) industry += "(" + subfield("industry_etc") + ")";
+    lines.push("- 업종: " + industry);
+    lines.push("- 종업원 수: " + radioVal("headcount"));
+    lines.push("- 연매출 규모: " + radioVal("revenue"));
+    let erp = radioVal("erp");
+    if (erp === "기타" && subfield("erp_etc")) erp += "(" + subfield("erp_etc") + ")";
+    lines.push("- 사용 ERP: " + erp);
+    lines.push("");
+    lines.push("Q1. ERP 활용도: " + radioVal("q1"));
+    lines.push("Q2. AI 도입 관심도: " + radioVal("q2"));
+    lines.push("Q3. AI 도입 예상 시기: " + radioVal("q3"));
+    let q4 = checkboxVals("q4");
+    if (q4.includes("기타") && subfield("q4_etc")) q4 = q4.map((v) => (v === "기타" ? "기타(" + subfield("q4_etc") + ")" : v));
+    lines.push("Q4. 우선 도입 분야: " + q4.join(", "));
+    let q5 = checkboxVals("q5");
+    if (q5.includes("기타") && subfield("q5_etc")) q5 = q5.map((v) => (v === "기타" ? "기타(" + subfield("q5_etc") + ")" : v));
+    lines.push("Q5. 기대 효과: " + q5.join(", "));
+    let q6 = radioVal("q6");
+    if (q6 === "기타의견" && subfield("q6_etc")) q6 += "(" + subfield("q6_etc") + ")";
+    lines.push("Q6. 정부 지원사업 참여 의향: " + q6);
+    let q6_1 = radioVal("q6_1");
+    if (q6_1 === "있다 — 선정되어 사업을 수행한 경험이 있다" && subfield("q6_1_detail")) q6_1 += " (" + subfield("q6_1_detail") + ")";
+    lines.push("Q6-1. 과거 지원사업 신청 경험: " + q6_1);
+    lines.push("Q7. 공동 신청 의향: " + radioVal("q7"));
+    if (q7NeedsFollowup()) {
+      lines.push("Q7-1. 희망 후속 미팅 시기: " + radioVal("q7_1"));
+    }
+    lines.push("");
+    lines.push("(개인정보 수집·이용 동의함)");
+    lines.push("제출 시각: " + new Date().toLocaleString("ko-KR"));
+    return lines.join("\n");
+  }
+
+  function submitSurvey() {
+    const summary = buildSummary();
+    document.getElementById("summaryBox").textContent = summary;
+    wizard.style.display = "none";
+    document.getElementById("topRail").style.display = "none";
+    resultScreen.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    updateScrollNav();
+  }
+
+  function showThankYou() {
+    resultScreen.style.display = "none";
+    document.getElementById("thankYouScreen").style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    updateScrollNav();
+  }
+
+  document.getElementById("mailBtn").addEventListener("click", () => {
+    const subject = "[AI 도입의향 조사 응답] " + val("q_company");
+    const body = document.getElementById("summaryBox").textContent;
+    window.location.href = "mailto:" + encodeURIComponent(RECEIVER_EMAIL) +
+      "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    showThankYou();
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById("summaryBox").textContent);
+      showToast("응답 내용을 복사했습니다.");
+    } catch (e) {
+      showToast("복사에 실패했습니다. 직접 선택해 복사해 주세요.");
+    }
+    showThankYou();
+  });
+
+  document.getElementById("downloadBtn").addEventListener("click", async () => {
+    const text = document.getElementById("summaryBox").textContent;
+    const filename = "AI도입의향조사_" + (val("q_company") || "응답") + ".txt";
+    if (window.claude && window.claude.downloads) {
+      try {
+        await window.claude.downloads.save({ filename, data: text });
+        showToast("파일 저장을 요청했습니다.");
+      } catch (e) {
+        showToast("파일 저장이 취소되었거나 실패했습니다.");
+      }
+    } else {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    showThankYou();
+  });
+
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    document.getElementById("thankYouScreen").style.display = "none";
+    document.getElementById("topRail").style.display = "";
+    wizard.style.display = "";
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach((el) => { el.value = ""; });
+    document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((el) => {
+      el.checked = false;
+      const opt = el.closest(".opt");
+      if (opt) opt.classList.remove("checked");
+    });
+    document.getElementById("q_consent").checked = false;
+    renderStep("intro");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  renderStep("intro");
+</script>
