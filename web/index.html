@@ -897,26 +897,82 @@
     return lines.join("\n");
   }
 
-  // 서버(Apps Script 웹앱)로 응답을 전송한다.
+  // ── 전송 ───────────────────────────────────────────────────────
   //
+  // Apps Script는 POST를 받으면 응답 본문을 script.googleusercontent.com의 일회용 URL로
+  // 리다이렉트해서 돌려준다. 이 회수 단계는 구글 쪽 사정으로 간헐적으로 실패한다(수십 초 지연 후 404).
+  // 그때 서버는 이미 doPost를 끝내고 시트에 저장을 마친 상태이므로, 단순 재시도는 중복 행을 만든다.
+  // → 제출마다 submissionId를 발급해 재시도에도 같은 값을 보내고, 서버가 그 ID로 중복을 걸러낸다.
+
+  // 실측(2026-08-06): 정상 응답은 1~2초, 장애 시에는 9~25초를 끌다 404로 끝난다.
+  // 그래서 대기 상한을 8초로 짧게 잡고 빨리 다시 시도하는 편이 유리하다.
+  // 중복 차단이 서버에 있으므로, 저장이 이미 끝난 요청을 끊고 재시도해도 행이 늘지 않는다.
+  const ATTEMPT_TIMEOUT_MS = 8000;            // 회당 대기 상한
+  const RETRY_DELAYS_MS = [800, 2000, 3500];  // 재시도 간격 → 총 4회 시도(최악 약 38초)
+
+  // 재시도해도 결과가 달라지지 않는 거부. 즉시 수동 접수 화면으로 넘긴다.
+  const NO_RETRY_ERRORS = ["rate", "captcha"];
+
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  function failure(code, message) {
+    const e = new Error(message || code);
+    e.code = code;
+    return e;
+  }
+
+  /** 제출 1건당 한 번만 발급. 재시도 시에도 같은 값을 재사용해야 중복 차단이 동작한다. */
+  function newSubmissionId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "sid-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12);
+  }
+
   // Content-Type을 text/plain으로 보내는 것이 중요하다: application/json으로 보내면 브라우저가
   // CORS 프리플라이트(OPTIONS)를 먼저 날리는데 Apps Script는 OPTIONS를 처리하지 못해 무조건 실패한다.
   // text/plain은 CORS 안전 목록이라 프리플라이트가 발생하지 않으며, 서버에서 JSON.parse 하면 된다.
   async function postToEndpoint(payload) {
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    let body = {};
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ATTEMPT_TIMEOUT_MS);
     try {
-      body = JSON.parse(await res.text());
-    } catch (e) {
-      throw new Error("응답 형식 오류");
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal,
+      });
+      if (!res.ok) throw failure("http", "HTTP " + res.status);
+      const raw = await res.text();
+      let body;
+      try {
+        body = JSON.parse(raw);
+      } catch (e) {
+        throw failure("format", "응답 형식 오류");
+      }
+      if (body.ok !== true) throw failure(body.error || "rejected", "서버 거부: " + (body.error || "?"));
+      return body;
+    } catch (err) {
+      if (err.code) throw err;
+      throw failure(err.name === "AbortError" ? "timeout" : "network", err.message);
+    } finally {
+      clearTimeout(timer);
     }
-    if (body.ok !== true) throw new Error(body.error || "거부됨");
-    return body;
+  }
+
+  async function postWithRetry(payload) {
+    let last;
+    for (let attempt = 1; attempt <= RETRY_DELAYS_MS.length + 1; attempt++) {
+      try {
+        return await postToEndpoint(payload);
+      } catch (err) {
+        last = err;
+        if (NO_RETRY_ERRORS.indexOf(err.code) !== -1) break;
+        if (attempt > RETRY_DELAYS_MS.length) break;
+        console.warn("제출 " + attempt + "회차 실패(" + err.code + ") — 재시도합니다.", err);
+        setBusy(true, "제출 중… 재시도 " + attempt);
+        await sleep(RETRY_DELAYS_MS[attempt - 1]);
+      }
+    }
+    throw last;
   }
 
   let submitting = false;
@@ -937,6 +993,7 @@
     const payload = collectAnswers();
     payload.website = document.getElementById("hp_website").value; // 허니팟
     payload.turnstileToken = turnstileToken;
+    payload.submissionId = newSubmissionId(); // 재시도 시 서버가 중복 저장을 걸러내는 키
 
     // 전송 성패와 무관하게 폴백 화면이 즉시 내용을 보여줄 수 있도록 요약을 먼저 채워둔다.
     document.getElementById("summaryBox").textContent = buildSummary();
@@ -951,10 +1008,10 @@
     setBusy(true, "제출 중…");
 
     try {
-      await postToEndpoint(payload);
+      await postWithRetry(payload);
       showThankYou();
     } catch (err) {
-      console.error("제출 실패:", err);
+      console.error("제출 실패(" + (err && err.code) + "):", err);
       showManualFallback();
     } finally {
       submitting = false;

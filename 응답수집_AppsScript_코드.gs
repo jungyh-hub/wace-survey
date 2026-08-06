@@ -40,6 +40,17 @@ const MAX_LEN = 1000;
 const RATE_LIMIT_PER_MIN = 30;
 
 /**
+ * 같은 submissionId를 이 시간(초) 안에 다시 받으면 중복 제출로 보고 저장하지 않는다.
+ *
+ * 왜 필요한가: Apps Script는 POST 응답을 script.googleusercontent.com의 일회용 URL로 리다이렉트해
+ * 돌려주는데, 이 회수 단계가 구글 쪽 사정으로 간헐적으로 실패한다(수십 초 지연 후 404).
+ * 그 시점에 doPost는 이미 끝나 시트 저장까지 마친 상태라, 페이지가 그냥 재시도하면 같은 응답이
+ * 두 줄 쌓인다. 페이지는 제출 1건당 submissionId를 한 번만 발급하고 재시도에도 같은 값을 보내므로,
+ * 여기서 그 값을 기억해 두 번째부터는 저장을 건너뛴다.
+ */
+const DEDUPE_TTL_SEC = 600;
+
+/**
  * 시트 열 정의. key는 HTML 페이지가 보내는 JSON 필드명과 1:1로 일치해야 한다.
  * 순서를 바꾸면 시트 열 순서도 바뀐다. 열을 추가할 때는 HTML의 collectAnswers()에도 같은 key를 추가할 것.
  */
@@ -98,8 +109,9 @@ function doPost(e) {
     // 3단계 — Turnstile 검증 (스크립트 속성에 TURNSTILE_SECRET 이 없으면 생략)
     if (!verifyTurnstile(d.turnstileToken)) return json({ ok: false, error: 'captcha' });
 
-    appendRow(d);
-    return json({ ok: true });
+    // duplicate=true 면 재시도로 다시 들어온 같은 제출이라 저장을 건너뛴 것이다(정상 처리).
+    var duplicate = appendRow(d);
+    return json({ ok: true, duplicate: duplicate });
   } catch (err) {
     console.error(err);
     return json({ ok: false, error: 'server' });
@@ -110,20 +122,45 @@ function doPost(e) {
 // 적재
 // ─────────────────────────────────────────────────────────────
 
+/**
+ * 응답 한 건을 시트에 적재한다.
+ * @return {boolean} 이미 저장된 제출이라 건너뛰었으면 true.
+ */
 function appendRow(d) {
-  // 동시 제출 시 같은 행에 겹쳐 쓰는 것을 방지
+  // 동시 제출 시 같은 행에 겹쳐 쓰는 것을 방지.
+  // 중복 판정과 저장이 이 락 안에서 함께 일어나야, 재시도 두 건이 동시에 도착해도 한 번만 저장된다.
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
+    var key = dedupeKey(d.submissionId);
+    var cache = CacheService.getScriptCache();
+    if (key && cache.get(key)) return true;
+
     var sheet = getSheet();
     var row = [new Date()];
     for (var i = 0; i < COLUMNS.length; i++) {
       row.push(clean(d[COLUMNS[i].key]));
     }
     sheet.appendRow(row);
+
+    // 저장이 끝난 뒤에 기록한다. 저장이 실패하면 키가 남지 않아 재시도가 정상적으로 다시 저장한다.
+    if (key) cache.put(key, '1', DEDUPE_TTL_SEC);
+    return false;
   } finally {
     lock.releaseLock();
   }
+}
+
+/**
+ * submissionId를 캐시 키로 변환한다.
+ * 외부 입력이므로 형식을 제한하고, 없거나 어긋나면 빈 값을 돌려 중복 판정을 생략한다
+ * (중복 차단은 편의 기능이므로, 판정을 못 하더라도 저장 자체는 막지 않는다).
+ */
+function dedupeKey(id) {
+  if (!id) return '';
+  var s = String(id);
+  if (!/^[A-Za-z0-9_-]{8,64}$/.test(s)) return '';
+  return 'sub_' + s;
 }
 
 /** 정의된 열만 화이트리스트로 통과시키고, 문자열화 + 길이 제한 + 수식 인젝션 무력화까지 처리한다. */
