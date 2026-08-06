@@ -1,32 +1,15 @@
+<meta charset="utf-8" />
 <title>오르카아이티 AI 도입 의향 조사</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- 지정된 고객사에만 링크로 전달하는 페이지이므로 검색엔진 색인에서 제외한다. -->
 <meta name="robots" content="noindex, nofollow" />
 <style>
+  /* 다크 단일 테마로 고정한다. 방문자 OS 설정(prefers-color-scheme)을 따라가지 않는다 —
+     고객사에 링크로 전달하는 페이지라 누가 열든 같은 화면이어야 한다. */
   :root {
-    --ink: #1b2340;
-    --ink-soft: #454c68;
-    --muted: #6b6f76;
-    --paper: #f6f5f1;
-    --card: #ffffff;
-    --line: #e3e1da;
-    --line-strong: #cfcdc4;
-    --accent: #a8781f;
-    --accent-soft: #f1e6d2;
-    --accent-ink: #201404;
-    --required: #a83a32;
-    --focus: #1b2340;
-    --radio-bg: #fbfaf7;
-    font-size: 16px;
+    /* 브라우저 기본 UI(스크롤바·폼 컨트롤·자동완성 배경)까지 어둡게 렌더링시킨다. */
+    color-scheme: dark;
 
-    /* 여백 스케일 — 카드 내부 리듬은 전부 이 값들로만 맞춘다. */
-    --gap-xs: 6px;   /* 라벨↔입력, 제목↔부제 */
-    --gap-sm: 12px;  /* 인접 요소 */
-    --gap-md: 18px;  /* 필드 간 */
-    --gap-lg: 24px;  /* 블록 간 · 카드 안쪽 여백 */
-    --gap-xl: 32px;  /* 화면 상하 여백 */
-  }
-  :root[data-theme="dark"] {
     --ink: #e9e7df;
     --ink-soft: #c7c4ba;
     --muted: #9b9891;
@@ -40,23 +23,14 @@
     --required: #e08579;
     --focus: #d7a94a;
     --radio-bg: #22242d;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ink: #e9e7df;
-      --ink-soft: #c7c4ba;
-      --muted: #9b9891;
-      --paper: #14151a;
-      --card: #1c1e26;
-      --line: #2c2e37;
-      --line-strong: #3a3c47;
-      --accent: #d7a94a;
-      --accent-soft: #362c17;
-      --accent-ink: #221a08;
-      --required: #e08579;
-      --focus: #d7a94a;
-      --radio-bg: #22242d;
-    }
+    font-size: 16px;
+
+    /* 여백 스케일 — 카드 내부 리듬은 전부 이 값들로만 맞춘다. */
+    --gap-xs: 6px;   /* 라벨↔입력, 제목↔부제 */
+    --gap-sm: 12px;  /* 인접 요소 */
+    --gap-md: 18px;  /* 필드 간 */
+    --gap-lg: 24px;  /* 블록 간 · 카드 안쪽 여백 */
+    --gap-xl: 32px;  /* 화면 상하 여백 */
   }
 
   * { box-sizing: border-box; }
