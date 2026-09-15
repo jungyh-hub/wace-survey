@@ -19,11 +19,13 @@ export default async function handler(req, res) {
   const user = String(body.user || '');
   const pass = String(body.password || '');
 
-  const expectedUser = process.env.ADMIN_USER || 'orca-admin';
+  const expectedUser = process.env.ADMIN_USER || '';
   const hash = process.env.ADMIN_PASSWORD_HASH || '';
 
-  if (!hash) {
-    console.error('ADMIN_PASSWORD_HASH 가 설정되지 않았습니다.');
+  // 둘 중 하나라도 비어 있으면 로그인을 아예 막는다.
+  // 기본 아이디를 두면 환경변수가 빠졌을 때 그 값으로 조용히 되돌아가 버린다.
+  if (!expectedUser || !hash) {
+    console.error('ADMIN_USER 또는 ADMIN_PASSWORD_HASH 가 설정되지 않았습니다.');
     return res.status(500).json({ ok: false, error: '서버 설정이 끝나지 않았습니다.' });
   }
 

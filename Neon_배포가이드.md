@@ -49,11 +49,13 @@
 
 값을 분실했다면 아래 3절·4절의 생성 명령으로 새로 만들어 교체하면 된다.
 
-선택 항목.
+`ADMIN_USER` 도 필수다(관리자 아이디). 값이 없으면 로그인 자체가 막힌다 —
+기본 아이디를 두면 환경변수가 빠졌을 때 그 값으로 조용히 되돌아가기 때문이다.
+
+선택 항목은 하나뿐이다.
 
 | 이름 | 기본값 | 용도 |
 |---|---|---|
-| `ADMIN_USER` | `orca-admin` | 관리자 아이디를 바꾸고 싶을 때 |
 | `TURNSTILE_SECRET` | (없음) | 캡차를 켤 때. 없으면 허니팟만으로 동작 |
 
 환경변수를 추가한 뒤에는 **재배포해야 반영된다** (Deployments → 최신 배포 → Redeploy).
@@ -70,7 +72,7 @@ Settings → General → **Root Directory 가 `web` 이어야 한다.** 이 값�
 | 항목 | 값 |
 |---|---|
 | 주소 | `https://<배포주소>/admin.html` |
-| 아이디 | `orca-admin` (환경변수 `ADMIN_USER` 로 변경 가능) |
+| 아이디 | 환경변수 `ADMIN_USER` 에 설정된 값 — 별도 전달 |
 | 비밀번호 | 별도 전달 — 이 문서에 적지 않는다 |
 
 비밀번호 **원문은 어디에도 저장되어 있지 않다.** 환경변수에 든 것은 scrypt 해시라 역산이 불가능하다.
@@ -84,7 +86,15 @@ console.log("scrypt$65536$8$1$"+s.toString("base64url")+"$"+h.toString("base64ur
 ' "새비밀번호"
 ```
 
-출력값을 `ADMIN_PASSWORD_HASH` 에 넣고 재배포한다.
+출력값을 `ADMIN_PASSWORD_HASH` 에 넣고 재배포한다. 이미 있는 값을 바꿀 때는 `--force` 가 필요하다.
+
+```bash
+vercel env add ADMIN_PASSWORD_HASH production --project wace-survey --sensitive --force --yes --value '<해시>'
+vercel redeploy <최신 프로덕션 URL>   # 환경변수는 재배포해야 반영된다
+```
+
+`vercel env ls` 의 `created` 열은 덮어써도 최초 생성 시각 그대로라 반영 여부를 알 수 없다.
+실제로 바뀌었는지는 로그인을 해 봐야 확인된다.
 
 `SESSION_SECRET` 은 아래로 만든다. 이 값을 바꾸면 이미 발급된 세션이 전부 무효가 되므로,
 계정이 샜다고 판단되면 비밀번호와 함께 이 값도 바꾼다.

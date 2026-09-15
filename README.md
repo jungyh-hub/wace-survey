@@ -113,7 +113,7 @@ Q4는 `생산 현장에서` / `설계 · 개발 업무에서` / `경영 · 사�
 | `DATABASE_URL` | ✔ | Neon pooled connection string |
 | `ADMIN_PASSWORD_HASH` | ✔ | 관리자 비밀번호의 scrypt 해시 (원문 아님) |
 | `SESSION_SECRET` | ✔ | 세션 쿠키 서명 키 |
-| `ADMIN_USER` | | 관리자 아이디 (기본 `orca-admin`) |
+| `ADMIN_USER` | ✔ | 관리자 아이디 (설정해 두었음) |
 | `TURNSTILE_SECRET` | | 캡차를 켤 때만. 없으면 허니팟만으로 동작 |
 
 설문 페이지 쪽에서 고칠 상수는 캡차 사이트 키 하나뿐이다(공개값이라 노출돼도 무해).
