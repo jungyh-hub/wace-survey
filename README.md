@@ -1,22 +1,31 @@
 # wace-survey — 오르카아이티 AI 도입의향 고객설문
 
 ERP 고객사를 대상으로 AI 도입 의향·투자 의향·정부 지원사업 참여 가능성을 조사하는 설문.
-공개 HTML 설문 페이지가 응답을 Apps Script 웹앱으로 POST하고, 응답은 **설문 기획자 소유의
-구글 시트 한 곳**에만 적재된다. 서버 없음 · API 키 없음.
+공개 HTML 설문 페이지가 같은 도메인의 Vercel 서버리스 함수로 응답을 POST하고,
+함수가 **Neon Postgres**에 적재한다. 응답 열람은 관리자 페이지에서 한다.
 
 ```
-[응답자 브라우저]  →  POST  →  [Apps Script 웹앱]  →  [기획자 소유 구글 시트]
-   설문 HTML                     실행: 소유자 권한         관리자 조회 화면
-                                 (append-only)
+[응답자 브라우저]  → POST /api/submit → [Vercel 서버리스 함수] → [Neon Postgres]
+   web/index.html                         DATABASE_URL 은 여기만        responses
+                                                 ↑
+[관리자 브라우저]  → /admin.html → /api/admin/*  (세션 쿠키 필요)
 ```
+
+**connection string은 브라우저로 내려가지 않는다.** 정적 페이지가 Postgres에 직접 붙으면
+설문 링크를 받은 누구나 DB를 읽고 지울 수 있다 — 그래서 함수를 사이에 두고 자격증명은
+Vercel 환경변수에만 둔다. 설정·운영 절차는 [`Neon_배포가이드.md`](Neon_배포가이드.md) 참조.
 
 ## 파일
 
 | 파일 | 역할 |
 |---|---|
-| [`web/index.html`](web/index.html) | **배포되는 유일한 파일.** 설문 페이지. `ENDPOINT` 상수에 웹앱 URL을 넣어 사용 |
-| [`응답수집_AppsScript_코드.gs`](응답수집_AppsScript_코드.gs) | 구글 시트에 바인딩해 웹앱으로 배포하는 수집 엔드포인트 |
-| [`응답수집_배포가이드_2026-08-06.md`](응답수집_배포가이드_2026-08-06.md) | 시트 생성 → 배포 → 조회까지 8단계 절차 |
+| [`web/index.html`](web/index.html) | 설문 페이지. `/api/submit` 으로 응답을 보낸다 |
+| [`web/admin.html`](web/admin.html) | 관리자 열람 페이지 (로그인 · 검색 · 상세 · CSV) |
+| [`web/api/`](web/api/) | 서버리스 함수 — `submit` 과 `admin/*`. 공용 코드는 `_lib/` |
+| [`web/db/schema.sql`](web/db/schema.sql) | `responses` 테이블 정의 (함수가 자동 생성하므로 참고용) |
+| [`Neon_배포가이드.md`](Neon_배포가이드.md) | **Neon 생성 → 환경변수 → 관리자 계정까지 전체 절차** |
+| [`응답수집_AppsScript_코드.gs`](응답수집_AppsScript_코드.gs) | (구) 구글 시트 수집 엔드포인트 — 더 이상 쓰지 않음 |
+| [`응답수집_배포가이드_2026-08-06.md`](응답수집_배포가이드_2026-08-06.md) | (구) 시트 기반 배포 절차 |
 | [`크롬익스텐션_배포지시_프롬프트.md`](크롬익스텐션_배포지시_프롬프트.md) | 위 배포를 브라우저 에이전트에 시키기 위한 프롬프트 |
 | [`구글폼_전환_빌드가이드_2026-08-06.md`](구글폼_전환_빌드가이드_2026-08-06.md) | 대안안 — 구글폼으로 대체할 경우의 문항·분기 스펙 |
 | [`영림원오르카_AI도입의향_고객설문_DOCX_빌드.py`](영림원오르카_AI도입의향_고객설문_DOCX_빌드.py) | 설문 설계안 DOCX 생성 스크립트 (내부 검토용 PART 6 포함) |
@@ -96,15 +105,21 @@ Q4는 `생산 현장에서` / `설계 · 개발 업무에서` / `경영 · 사�
 
 ## 설정
 
-설문 페이지 `<script>` 상단 두 상수만 채우면 동작한다.
+**자격증명은 저장소에 두지 않는다.** Vercel 환경변수에만 넣는다.
+
+| 이름 | 필수 | 용도 |
+|---|---|---|
+| `DATABASE_URL` | ✔ | Neon pooled connection string |
+| `ADMIN_PASSWORD_HASH` | ✔ | 관리자 비밀번호의 scrypt 해시 (원문 아님) |
+| `SESSION_SECRET` | ✔ | 세션 쿠키 서명 키 |
+| `ADMIN_USER` | | 관리자 아이디 (기본 `orca-admin`) |
+| `TURNSTILE_SECRET` | | 캡차를 켤 때만. 없으면 허니팟만으로 동작 |
+
+설문 페이지 쪽에서 고칠 상수는 캡차 사이트 키 하나뿐이다(공개값이라 노출돼도 무해).
 
 ```js
-const ENDPOINT = "";            // Apps Script 웹앱 /exec URL. 비우면 수동 접수 화면으로 폴백
-const TURNSTILE_SITE_KEY = "";  // 선택. 비우면 허니팟만으로 동작
+const TURNSTILE_SITE_KEY = "";  // 비우면 허니팟만으로 동작
 ```
-
-Turnstile **시크릿 키는 이 저장소에 두지 않는다.** Apps Script의 스크립트 속성
-(`TURNSTILE_SECRET`)에만 저장한다.
 
 ## 배포 시 주의
 

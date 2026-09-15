@@ -2,3 +2,9 @@
 .vscode/
 *.tmp
 ~$*
+
+# 서버리스 함수 의존성 — Vercel이 빌드 때 설치한다
+web/node_modules/
+# 환경변수는 Vercel에만 둔다. 저장소에 절대 커밋하지 않는다
+.env
+.env.*

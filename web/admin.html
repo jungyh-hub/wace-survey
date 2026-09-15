@@ -1,0 +1,353 @@
+<meta charset="utf-8" />
+<title>응답 관리 · 오르카아이티 AI사업부</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<style>
+  /* 설문 페이지와 같은 디자인 토큰을 쓴다(web/index.html 참조). */
+  :root {
+    color-scheme: dark;
+    --bg: #16161a; --surface: #1f1f24; --surface-2: #26262c; --surface-3: #2f2f36;
+    --edge: #3a3a42; --edge-i: #72727c; --edge-i-hover: #8d8d98;
+    --text: #f2efe9; --text-2: #cdcac3; --muted: #9d9a94;
+    --gold: #c9a45c; --gold-hi: #dfbd7c; --on-gold: #1a1408; --sel-bg: #332b19;
+    --req: #e58a7b; --ok: #63b189;
+    --s1: 6px; --s2: 12px; --s3: 18px; --s4: 24px; --s5: 32px;
+    font-size: 16px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased; word-break: keep-all;
+  }
+  a { color: var(--gold); }
+
+  /* ── 문서 머리 ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 10; background: var(--bg);
+    border-bottom: 1px solid var(--edge);
+    padding: calc(13px + env(safe-area-inset-top, 0px)) 20px 13px;
+  }
+  .topbar-in {
+    max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; color: var(--text-2); }
+  .brand svg { width: 20px; height: 20px; color: var(--gold); }
+  .brand em { font-style: normal; color: var(--muted); font-weight: 600; }
+  .spacer { flex: 1; }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: var(--s5) 20px 60px; }
+
+  .btn {
+    font-family: inherit; font-size: 14.5px; font-weight: 800; line-height: 1.2;
+    height: 42px; padding: 0 16px; border-radius: 3px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--surface-2); color: var(--text-2); border: 1px solid var(--edge-i);
+  }
+  .btn:hover { background: var(--surface-3); border-color: var(--edge-i-hover); }
+  .btn:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
+  .btn.primary { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+  .btn.primary:hover { background: var(--gold-hi); border-color: var(--gold-hi); }
+  .btn:disabled { opacity: .55; cursor: default; }
+
+  input[type="text"], input[type="password"], input[type="search"] {
+    width: 100%; height: 46px; padding: 0 13px; font-size: 16px;
+    border: 1px solid var(--edge-i); border-radius: 3px;
+    background: var(--surface-2); color: var(--text); font-family: inherit;
+  }
+  input::placeholder { color: var(--muted); }
+  input:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 1px; border-color: var(--gold); }
+
+  /* ── 로그인 ── */
+  #loginView { max-width: 400px; margin: 10vh auto; padding: 0 20px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--edge); border-top: 2px solid var(--gold);
+    border-radius: 3px; padding: var(--s5) var(--s4) var(--s4);
+  }
+  .eyebrow { font-size: 12.5px; font-weight: 800; letter-spacing: .14em; color: var(--gold); }
+  h1 { font-size: 22px; font-weight: 800; margin: var(--s2) 0 var(--s1); }
+  .lead { font-size: 14px; color: var(--muted); margin: 0 0 var(--s4); padding-bottom: var(--s2); border-bottom: 1px solid var(--edge); }
+  .field { margin-bottom: var(--s3); }
+  label.flabel { display: block; font-size: 14px; font-weight: 700; margin-bottom: var(--s1); }
+  .err { display: none; color: var(--req); font-size: 13.5px; font-weight: 700; margin-bottom: var(--s2); }
+
+  /* ── 요약 ── */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--s2); margin-bottom: var(--s4); }
+  .stat { background: var(--surface); border: 1px solid var(--edge); border-left: 2px solid var(--gold); padding: 13px 15px; }
+  .stat dt { font-size: 12.5px; color: var(--muted); font-weight: 700; margin: 0 0 3px; }
+  .stat dd { margin: 0; font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  .toolbar { display: flex; gap: var(--s2); margin-bottom: var(--s3); flex-wrap: wrap; align-items: center; }
+  .toolbar .search { flex: 1 1 260px; }
+  .count { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* ── 표 ── */
+  .table-wrap { border: 1px solid var(--edge); border-radius: 3px; overflow-x: auto; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--edge); vertical-align: top; }
+  thead th {
+    position: sticky; top: 0; background: var(--surface-2); color: var(--text-2);
+    font-size: 12.5px; font-weight: 800; letter-spacing: .04em; white-space: nowrap;
+  }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.when { color: var(--muted); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.who b { display: block; font-weight: 800; }
+  td.who span { color: var(--muted); font-size: 13px; }
+  .pill {
+    display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 2px;
+    border: 1px solid var(--edge); background: var(--surface-3); color: var(--text-2); white-space: nowrap;
+  }
+  .pill.hot { border-color: var(--gold); background: var(--sel-bg); color: var(--gold-hi); }
+  .empty { padding: 48px 20px; text-align: center; color: var(--muted); font-size: 14.5px; }
+
+  .pager { display: flex; gap: var(--s2); justify-content: center; align-items: center; margin-top: var(--s4); }
+  .pager span { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* ── 상세 ── */
+  dialog {
+    width: min(720px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--edge);
+    border-top: 2px solid var(--gold); border-radius: 3px; background: var(--surface); color: var(--text);
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, .66); }
+  .dlg-head { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--edge); }
+  .dlg-head h2 { margin: 0; font-size: 18px; font-weight: 800; flex: 1; }
+  .dlg-body { padding: 4px 20px 20px; max-height: 68vh; overflow-y: auto; }
+  .dlg-body dl { margin: 0; display: grid; grid-template-columns: 148px 1fr; }
+  .dlg-body dt {
+    font-size: 13px; font-weight: 700; color: var(--gold); padding: 11px 12px 11px 0;
+    border-top: 1px solid var(--edge);
+  }
+  .dlg-body dd { margin: 0; font-size: 14.5px; color: var(--text-2); padding: 11px 0; border-top: 1px solid var(--edge); }
+  .dlg-body dd:empty::after { content: "—"; color: var(--muted); }
+  .close-x { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px 8px; }
+  .close-x:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: var(--s4) 14px 48px; }
+    .dlg-body dl { grid-template-columns: 1fr; }
+    .dlg-body dt { padding-bottom: 0; border-top: 1px solid var(--edge); }
+    .dlg-body dd { padding-top: 2px; border-top: none; }
+  }
+</style>
+
+<!-- ══ 로그인 ══ -->
+<div id="loginView">
+  <form class="card" id="loginForm">
+    <div class="eyebrow">오르카아이티 · AI사업부</div>
+    <h1>응답 관리</h1>
+    <p class="lead">AI 도입 의향 조사 응답을 열람합니다.</p>
+    <div class="err" id="loginErr"></div>
+    <div class="field">
+      <label class="flabel" for="u">아이디</label>
+      <input type="text" id="u" autocomplete="username" autocapitalize="off" spellcheck="false" />
+    </div>
+    <div class="field">
+      <label class="flabel" for="p">비밀번호</label>
+      <input type="password" id="p" autocomplete="current-password" />
+    </div>
+    <button class="btn primary" id="loginBtn" type="submit" style="width:100%;height:48px">로그인</button>
+  </form>
+</div>
+
+<!-- ══ 목록 ══ -->
+<div id="appView" hidden>
+  <div class="topbar">
+    <div class="topbar-in">
+      <span class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+        오르카아이티 · AI사업부 <em>응답 관리</em>
+      </span>
+      <span class="spacer"></span>
+      <button class="btn" id="csvBtn" type="button">CSV 내려받기</button>
+      <button class="btn" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <dl class="stats">
+      <div class="stat"><dt>전체 응답</dt><dd id="sAll">—</dd></div>
+      <div class="stat"><dt>오늘 접수</dt><dd id="sToday">—</dd></div>
+      <div class="stat"><dt>후속 상담 희망</dt><dd id="sLead">—</dd></div>
+    </dl>
+
+    <div class="toolbar">
+      <div class="search">
+        <input type="search" id="q" placeholder="회사명 · 담당자 · 이메일 · 연락처 · 업종 · ERP 검색" />
+      </div>
+      <button class="btn" id="searchBtn" type="button">검색</button>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:150px">접수시각</th>
+            <th style="width:190px">회사 · 담당자</th>
+            <th style="width:120px">규모</th>
+            <th style="width:130px">사용 ERP</th>
+            <th>우선 도입 분야</th>
+            <th style="width:120px">후속 상담</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>응답이 없습니다.</div>
+    </div>
+
+    <div class="pager">
+      <button class="btn" id="prevPage" type="button">이전</button>
+      <span id="pageInfo"></span>
+      <button class="btn" id="nextPage" type="button">다음</button>
+    </div>
+  </div>
+</div>
+
+<dialog id="detail">
+  <div class="dlg-head">
+    <h2 id="dTitle">응답 상세</h2>
+    <button class="close-x" type="button" id="dClose" aria-label="닫기">&times;</button>
+  </div>
+  <div class="dlg-body"><dl id="dBody"></dl></div>
+</dialog>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const loginView = $('loginView'), appView = $('appView');
+
+  let page = 1, pages = 1, term = '';
+
+  async function api(path, opts) {
+    const res = await fetch(path, { credentials: 'same-origin', ...opts });
+    if (res.status === 401) { showLogin(); throw new Error('unauthorized'); }
+    return res;
+  }
+
+  function showLogin() {
+    appView.hidden = true;
+    loginView.hidden = false;
+    $('u').focus();
+  }
+
+  function showApp() {
+    loginView.hidden = true;
+    appView.hidden = false;
+    load();
+  }
+
+  // ── 로그인 ──
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = $('loginErr');
+    err.style.display = 'none';
+    $('loginBtn').disabled = true;
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user: $('u').value.trim(), password: $('p').value }),
+      });
+      const body = await res.json();
+      if (body.ok) { $('p').value = ''; showApp(); }
+      else { err.textContent = body.error || '로그인에 실패했습니다.'; err.style.display = 'block'; }
+    } catch {
+      err.textContent = '연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+      err.style.display = 'block';
+    } finally {
+      $('loginBtn').disabled = false;
+    }
+  });
+
+  $('logoutBtn').addEventListener('click', async () => {
+    await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+    showLogin();
+  });
+
+  $('csvBtn').addEventListener('click', () => { window.location.href = '/api/admin/export'; });
+
+  // ── 목록 ──
+  const esc = (s) => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  const fmt = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+
+  const isLead = (q7) => /^예,|^관심은 있으나/.test(q7 || '');
+
+  let rows = [];
+
+  async function load() {
+    const res = await api(`/api/admin/responses?page=${page}&q=${encodeURIComponent(term)}`);
+    const body = await res.json();
+    if (!body.ok) return;
+
+    rows = body.rows;
+    pages = body.pages;
+    $('sAll').textContent = body.stats.all_count.toLocaleString();
+    $('sToday').textContent = body.stats.today_count.toLocaleString();
+    $('sLead').textContent = body.stats.lead_count.toLocaleString();
+    $('count').textContent = term ? `검색 결과 ${body.total}건` : `${body.total}건`;
+    $('pageInfo').textContent = `${body.page} / ${pages}`;
+    $('prevPage').disabled = body.page <= 1;
+    $('nextPage').disabled = body.page >= pages;
+    $('empty').hidden = rows.length > 0;
+
+    $('tbody').innerHTML = rows.map((r, i) => `
+      <tr data-i="${i}" style="cursor:pointer">
+        <td class="when">${esc(fmt(r.created_at))}</td>
+        <td class="who"><b>${esc(r.company) || '—'}</b><span>${esc(r.name)}${r.title ? ' · ' + esc(r.title) : ''}</span></td>
+        <td>${esc(r.headcount) || '—'}</td>
+        <td>${esc(r.erp) || '—'}</td>
+        <td>${esc(r.q4) || '—'}</td>
+        <td>${isLead(r.q7) ? '<span class="pill hot">희망</span>' : '<span class="pill">—</span>'}</td>
+      </tr>`).join('');
+  }
+
+  $('tbody').addEventListener('click', (e) => {
+    const tr = e.target.closest('tr[data-i]');
+    if (tr) openDetail(rows[Number(tr.dataset.i)]);
+  });
+
+  $('searchBtn').addEventListener('click', () => { term = $('q').value.trim(); page = 1; load(); });
+  $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('searchBtn').click(); });
+  $('prevPage').addEventListener('click', () => { if (page > 1) { page -= 1; load(); } });
+  $('nextPage').addEventListener('click', () => { if (page < pages) { page += 1; load(); } });
+
+  // ── 상세 ──
+  const DETAIL = [
+    ['created_at', '접수시각'], ['company', '회사명'], ['name', '담당자'], ['title', '직책'],
+    ['phone', '연락처'], ['email', '이메일'], ['industry', '업종'], ['headcount', '종업원 수'],
+    ['revenue', '연매출 규모'], ['erp', '사용 ERP'],
+    ['q1', 'Q1 ERP 활용도'], ['q2', 'Q2 AI 관심도'], ['q3', 'Q3 도입 시기'],
+    ['q4', 'Q4 우선 도입 분야'], ['q5', 'Q5 기대 효과'],
+    ['q6', 'Q6 정부지원사업 참여의향'], ['q6_1', 'Q6-1 과거 지원사업 경험'],
+    ['q7', 'Q7 공동신청 의향'], ['q7_1', 'Q7-1 희망 미팅시기'],
+    ['consent', '개인정보 동의'], ['client_time', '제출시각(응답자 기준)'],
+  ];
+
+  function openDetail(r) {
+    $('dTitle').textContent = `${r.company || '응답'} · ${r.name || ''}`.trim();
+    $('dBody').innerHTML = DETAIL.map(([k, label]) => {
+      const v = k === 'created_at' ? fmt(r[k]) : r[k];
+      return `<dt>${esc(label)}</dt><dd>${esc(v)}</dd>`;
+    }).join('');
+    $('detail').showModal();
+  }
+  $('dClose').addEventListener('click', () => $('detail').close());
+
+  // ── 시작 ──
+  (async () => {
+    try {
+      const body = await (await fetch('/api/admin/session', { credentials: 'same-origin' })).json();
+      if (body.ok) showApp(); else showLogin();
+    } catch {
+      showLogin();
+    }
+  })();
+</script>
