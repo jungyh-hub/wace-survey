@@ -1,46 +1,78 @@
 <meta charset="utf-8" />
 <title>오르카아이티 AI 도입 의향 조사</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <!-- 지정된 고객사에만 링크로 전달하는 페이지이므로 검색엔진 색인에서 제외한다. -->
 <meta name="robots" content="noindex, nofollow" />
 <style>
-  /* 다크 단일 테마로 고정한다. 방문자 OS 설정(prefers-color-scheme)을 따라가지 않는다 —
-     고객사에 링크로 전달하는 페이지라 누가 열든 같은 화면이어야 한다. */
+  /* ════════════════════════════════════════════════════════════════
+     디자인 토큰 — 화면에 쓰는 색·크기·간격은 전부 여기서만 정의한다.
+     다크 단일 테마로 고정한다(방문자 OS 설정을 따라가지 않는다).
+     고객사에 링크로 전달하는 페이지라 누가 열든 같은 화면이어야 한다.
+     ════════════════════════════════════════════════════════════════ */
   :root {
     /* 브라우저 기본 UI(스크롤바·폼 컨트롤·자동완성 배경)까지 어둡게 렌더링시킨다. */
     color-scheme: dark;
 
-    --ink: #e9e7df;
-    --ink-soft: #c7c4ba;
-    --muted: #9b9891;
-    --paper: #14151a;
-    --card: #1c1e26;
-    --line: #2c2e37;
-    --line-strong: #3a3c47;
-    --accent: #d7a94a;
-    --accent-soft: #362c17;
-    --accent-ink: #221a08;
-    --required: #e08579;
-    --focus: #d7a94a;
-    --radio-bg: #22242d;
-    font-size: 16px;
+    /* ── 표면 단계 ── 배경 → 카드 → 선택지 → hover 순으로 밝아진다.
+       청회색 대신 중성·웜 그레이를 쓴다 — 앱 UI보다 인쇄 문서에 가까운 인상을 위해. */
+    --bg: #16161a;
+    --surface: #1f1f24;
+    --surface-2: #26262c;
+    --surface-3: #2f2f36;
 
-    /* 여백 스케일 — 카드 내부 리듬은 전부 이 값들로만 맞춘다. */
-    --gap-xs: 6px;   /* 라벨↔입력, 제목↔부제 */
-    --gap-sm: 12px;  /* 인접 요소 */
-    --gap-md: 18px;  /* 필드 간 */
-    --gap-lg: 24px;  /* 블록 간 · 카드 안쪽 여백 */
-    --gap-xl: 32px;  /* 화면 상하 여백 */
+    /* ── 테두리 ── 장식용과 상호작용용을 구분한다.
+       상호작용용(선택지·입력칸)은 맞닿은 표면 대비 3:1 이상을 지킨다(WCAG 1.4.11).
+       이전 버전은 이 값이 1.2:1이라 "무엇이 누를 수 있는 칸인지" 보이지 않았다. */
+    --edge: #3a3a42;          /* 카드 외곽·괘선 (장식) */
+    --edge-i: #72727c;        /* 선택지·입력칸 (3.16:1) */
+    --edge-i-hover: #8d8d98;  /* hover (4.58:1) */
+
+    /* ── 글자 ── */
+    --text: #f2efe9;          /* 본문 14.3:1 */
+    --text-2: #cdcac3;        /* 보조 10.0:1 */
+    --muted: #9d9a94;         /* 부가 설명 5.9:1 */
+
+    /* ── 강조 ── 골드는 CTA·진행률·선택 표시에만 쓴다. 장식으로 쓰지 않는다. */
+    --gold: #c9a45c;          /* 이전보다 채도를 낮췄다 — 장식이 아니라 표식으로 쓰기 위해 */
+    --gold-hi: #dfbd7c;
+    --on-gold: #1a1408;
+    --sel-bg: #332b19;        /* 선택된 항목 배경 */
+    --req: #e58a7b;
+    --ok: #63b189;
+
+    /* ── 글자 크기 ── 40~60대 응답자 기준으로 이전 버전보다 한 단계 키웠다. */
+    --fs-h1: 30px;
+    --fs-qtitle: 22px;
+    --fs-meta: 14px;
+    --fs-opt: 16.5px;
+    --fs-desc: 13.5px;
+    --fs-label: 15px;
+    --fs-input: 16px;   /* 16px 미만이면 iOS Safari가 입력 시 화면을 자동 확대한다 */
+    --fs-btn: 16.5px;
+    --fs-rail: 13.5px;
+    --fs-eyebrow: 12.5px;
+
+    /* ── 여백 ── 카드 안팎의 리듬은 전부 이 값들로만 맞춘다. */
+    --s1: 6px; --s2: 12px; --s3: 18px; --s4: 24px; --s5: 32px;
+
+    /* ── 모서리·높이 ── 둥근 모서리를 크게 줄였다. 각진 형태가 문서에 가깝다.
+       터치 타깃은 최소 48px를 넘긴다. */
+    --r-card: 3px; --r-opt: 3px; --r-btn: 3px;
+    --h-btn: 52px; --h-opt: 56px; --h-input: 48px;
+
+    --maxw: 780px;
+    font-size: 16px;
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html { height: 100%; }
   body {
     margin: 0;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--bg);
+    color: var(--text);
     font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
-    line-height: 1.65;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     /* 한글은 기본적으로 아무 글자에서나 줄바꿈된다 → 어절 단위로 끊고, 긴 영문/이메일만 예외로 쪼갠다. */
     word-break: keep-all;
@@ -51,556 +83,763 @@
     /* 모바일 브라우저의 주소창 높이를 제외한 실제 표시 높이 */
     min-height: 100svh;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; width: 100%; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; width: 100%; }
 
-  /* top progress rail */
+  /* ── 상단 진행 레일 ───────────────────────────────────────────── */
   .rail {
     position: sticky; top: 0; z-index: 10;
-    background: var(--paper);
-    padding: 14px 0 10px;
-    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    padding: calc(13px + env(safe-area-inset-top, 0px)) 0 11px;
+    border-bottom: 1px solid var(--edge);
   }
-  .rail-inner { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+  .rail-inner { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+  .rail-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; margin-bottom: 8px;
+  }
+  .rail-brand {
+    display: flex; align-items: center; gap: 7px;
+    font-size: var(--fs-rail); font-weight: 700; color: var(--text-2);
+  }
+  .rail-brand .mark { width: 19px; height: 19px; flex: none; color: var(--gold); }
+  .rail-count {
+    font-size: var(--fs-rail); font-weight: 700; color: var(--text-2);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .rail-count b { color: var(--gold); }
+  /* 4px·저대비였던 이전 게이지는 존재감이 없었다. 높이와 배경 대비를 함께 올린다. */
   .rail-track {
-    position: relative;
-    height: 4px; border-radius: 2px; background: var(--line);
-    overflow: hidden;
+    position: relative; height: 5px; border-radius: 0;
+    background: var(--surface-3); overflow: hidden;
   }
   .rail-fill {
-    height: 100%; width: 0%; background: var(--accent);
+    height: 100%; width: 0%; background: var(--gold);
     transition: width .25s ease;
   }
-  /* 제출 중 상단 레일을 불확정(indeterminate) 진행 바로 전환한다. */
+  /* 제출 중에는 불확정(indeterminate) 진행 바로 전환한다. */
   .rail-busy {
     display: none; position: absolute; top: 0; bottom: 0; left: 0;
-    width: 35%; border-radius: 2px; background: var(--accent);
+    width: 35%; background: var(--gold);
   }
   .rail-track.busy .rail-fill { opacity: .25; }
   .rail-track.busy .rail-busy { display: block; animation: railSlide 1.1s ease-in-out infinite; }
   @keyframes railSlide { from { transform: translateX(-100%); } to { transform: translateX(286%); } }
-  .rail-label {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 12px; color: var(--muted); margin-top: 6px;
-    letter-spacing: .02em;
-  }
-  .rail-brand { font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-size: 11px; }
 
   main { flex: 1; display: flex; flex-direction: column; }
 
-  /* wizard steps */
+  /* ── 단계(카드) ───────────────────────────────────────────────── */
   /* .wrap의 좌우 20px를 유지해야 하므로 padding은 4값 모두 명시한다(ID 선택자가 .wrap을 덮어씀). */
   #stepArea {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1; display: flex; flex-direction: column;
     /* 위아래를 같은 값으로 두어야 auto 여백이 카드를 정확히 가운데에 놓는다. */
-    padding: var(--gap-xl) 20px;
+    padding: var(--s5) 20px;
   }
   .step { display: none; }
   /* 카드가 화면보다 짧으면 세로 가운데, 길면 auto 여백이 0이 되어 위에서부터 흐른다(내용 잘림 없음). */
   .step.active { display: block; margin: auto 0; animation: fadein .2s ease; }
   @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  .eyebrow {
-    font-size: 12px; letter-spacing: .12em; color: var(--accent);
-    font-weight: 700; text-transform: uppercase;
+  /* 카드 위쪽에 골드 괘선을 얹어 레터헤드처럼 보이게 한다. */
+  .card {
+    position: relative;
+    background: var(--surface); border: 1px solid var(--edge);
+    border-top: 2px solid var(--gold);
+    border-radius: var(--r-card); padding: var(--s5) var(--s4) var(--s4);
   }
+
+  /* 문항 머리 — 번호와 제목을 조항처럼 나란히 둔다. */
+  .qhead { display: flex; gap: 12px; align-items: baseline; }
+  .qno {
+    flex: none; font-size: 15px; font-weight: 800; color: var(--gold);
+    font-variant-numeric: tabular-nums; letter-spacing: .02em; line-height: 1.5;
+  }
+  /* 제목 아래 얇은 괘선 — 문항 영역의 시작을 문서처럼 끊어준다. */
+  .qmeta { border-bottom: 1px solid var(--edge); padding-bottom: var(--s2); }
+
   h1.title {
-    font-size: 26px; line-height: 1.35; color: var(--ink);
-    margin: var(--gap-xs) 0; text-wrap: balance; font-weight: 800;
-  }
-  .sub {
-    color: var(--muted); font-size: 14.5px; margin: 0 0 var(--gap-lg);
-  }
-  hr.rule {
-    border: none; border-top: 1px solid var(--line-strong); margin: var(--gap-lg) 0;
-  }
-
-  .letter-body p { margin: 0 0 var(--gap-sm); color: var(--ink-soft); font-size: 15px; }
-  .letter-body p:last-child { margin-bottom: 0; }
-  .signature {
-    text-align: right; margin-top: var(--gap-lg); font-size: 14.5px; color: var(--ink-soft);
-  }
-  .signature .contact { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .placeholder-note {
-    display: inline-block; padding: 1px 6px; border-radius: 4px;
-    background: var(--accent-soft); color: var(--accent-ink); font-size: 12.5px;
-  }
-
-  .part-num {
-    font-size: 12px; letter-spacing: .1em; color: var(--muted); font-weight: 700; display: block; margin-bottom: var(--gap-xs);
+    font-size: var(--fs-h1); line-height: 1.3; margin: var(--s2) 0 var(--s1);
+    font-weight: 800; text-wrap: balance;
   }
   h2.qtitle {
-    font-size: 19px; line-height: 1.4; margin: 0 0 var(--gap-xs); color: var(--ink); font-weight: 800; text-wrap: balance;
+    font-size: var(--fs-qtitle); line-height: 1.4; margin: 0 0 var(--s1);
+    font-weight: 800; text-wrap: balance;
   }
-  .qmeta { font-size: 12.5px; color: var(--muted); margin: 0 0 var(--gap-lg); }
-
-  .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: var(--gap-lg);
+  .qmeta { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 var(--s4); }
+  .qmeta:empty { display: none; }
+  /* 단일 선택/복수 선택을 12.5px 평문이 아니라 눈에 띄는 배지로 알린다. */
+  .qmeta .tag {
+    display: inline-block; font-size: 12.5px; font-weight: 700; color: var(--text-2);
+    background: var(--surface-3); border: 1px solid var(--edge);
+    border-radius: 2px; padding: 1px 8px; margin-right: 7px;
   }
+  /* 문서 머리 표시 — 알약 배지 대신 대문자 소제목처럼 둔다. */
+  .steplabel {
+    display: block; font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: .14em;
+    color: var(--gold); margin-bottom: var(--s2);
+  }
+  hr.rule { border: none; border-top: 1px solid var(--edge); margin: var(--s4) 0; }
 
-  .field { margin-bottom: var(--gap-md); }
+  /* ── 인트로 ───────────────────────────────────────────────────── */
+  .masthead {
+    display: flex; align-items: center; gap: 11px;
+    padding-bottom: var(--s3); border-bottom: 2px solid var(--gold);
+  }
+  .masthead .logo { width: 40px; height: 40px; flex: none; color: var(--gold); }
+  .masthead .who { font-size: 16px; font-weight: 800; line-height: 1.3; }
+  .masthead .who span { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-top: 1px; }
+  .facts { display: flex; gap: var(--s2); margin: var(--s4) 0 0; flex-wrap: wrap; }
+  .fact {
+    flex: 1 1 150px; background: var(--surface-2); border: 1px solid var(--edge);
+    border-radius: 9px; padding: 11px 13px;
+  }
+  .fact dt { font-size: 12.5px; color: var(--muted); font-weight: 700; margin: 0 0 2px; }
+  .fact dd { margin: 0; font-size: 15px; font-weight: 800; color: var(--text); }
+  .letter p { margin: 0 0 var(--s2); color: var(--text-2); font-size: 16px; line-height: 1.72; }
+  .letter p:last-child { margin-bottom: 0; }
+  .sign {
+    margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--edge);
+    font-size: 15px; color: var(--text-2);
+  }
+  .sign .name { font-weight: 800; color: var(--text); }
+  .sign .contact { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
+  /* 발송 전 확인용 표식. 이전 버전은 어두운 글자를 어두운 배경에 얹어 읽을 수 없었다(1.25:1). */
+  .placeholder-note {
+    display: inline-block; padding: 1px 7px; border-radius: 4px; margin-left: 4px;
+    background: var(--sel-bg); border: 1px solid var(--gold); color: var(--gold-hi);
+    font-size: 12.5px; font-weight: 700;
+  }
+  .assure {
+    display: flex; gap: 9px; align-items: flex-start; margin-top: var(--s3);
+    padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--edge);
+    border-radius: 2px; font-size: 13.5px; color: var(--text-2);
+  }
+  .assure svg { width: 17px; height: 17px; flex: none; color: var(--ok); margin-top: 2px; }
+  .assure b { color: var(--text); }
+
+  /* ── 입력 필드 ────────────────────────────────────────────────── */
+  .field { margin-bottom: var(--s3); }
   .field:last-child { margin-bottom: 0; }
   /* 카드 마지막 요소 뒤에는 navbar가 붙으므로(JS가 이동시킴) 그 앞 필드의 여백도 제거한다.
      :has() 미지원 브라우저에서 위 규칙까지 함께 무효화되지 않도록 규칙을 분리해 둔다. */
   .field:has(+ .navbar) { margin-bottom: 0; }
-  label.flabel {
-    display: block; font-size: 14px; font-weight: 700; color: var(--ink);
-    margin-bottom: var(--gap-xs);
-  }
-  /* 동의 문구의 별표에도 색이 적용되도록 클래스만으로 선택한다.
-     앞말과 띄우는 여백은 라벨 안에서만 — 오류 문구의 괄호 안 별표는 붙여 쓴다. */
-  .req { color: var(--required); }
+  label.flabel { display: block; font-size: var(--fs-label); font-weight: 700; margin-bottom: var(--s1); }
+  /* 동의 문구의 별표에도 색이 적용되도록 클래스만으로 선택한다. */
+  .req { color: var(--req); }
   label .req { margin-left: 3px; }
-  .fhint { font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 2px; display:block; }
+  .fhint { display: block; font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  /* 라벨과 같은 줄에 두어 두 칸의 라벨 높이를 맞춘다. */
+  .fhint-inline { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 5px; }
 
   input[type="text"], input[type="email"], input[type="tel"] {
-    width: 100%; padding: 10px 12px; font-size: 14.5px;
-    border: 1px solid var(--line-strong); border-radius: 7px;
-    background: var(--radio-bg); color: var(--ink); font-family: inherit;
+    width: 100%; height: var(--h-input); padding: 0 13px; font-size: var(--fs-input);
+    border: 1px solid var(--edge-i); border-radius: 3px;
+    background: var(--surface-2); color: var(--text); font-family: inherit;
   }
-  input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+  input::placeholder { color: var(--muted); }
+  input:hover { border-color: var(--edge-i-hover); }
+  /* 선택 상태(골드 테두리)와 헷갈리지 않도록 focus는 더 밝은 톤의 두꺼운 외곽선으로 구분한다. */
+  input:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 1px; border-color: var(--gold); }
 
   /* 행 자체가 아래 여백을 갖고, 내부 필드는 갖지 않는다 — 1단으로 접혔을 때 행 간격이 사라지지 않도록. */
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-sm); margin-bottom: var(--gap-md); }
-  .row2 .field { margin-bottom: 0; }
+  /* 라벨 줄 수가 서로 달라도(예: '직책'에만 보조 문구) 입력칸 아랫줄이 어긋나지 않도록
+     각 칸을 세로 flex로 두고 입력칸을 바닥에 붙인다. */
+  .row2 {
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2);
+    margin-bottom: var(--s3); align-items: end;
+  }
+  .row2 .field { margin-bottom: 0; display: flex; flex-direction: column; justify-content: flex-end; }
+  .row2 .field > input { margin-top: auto; }
   .row2:last-child { margin-bottom: 0; }
   .row2:has(+ .navbar) { margin-bottom: 0; }
 
-  .opt-list { display: flex; flex-direction: column; gap: 9px; }
+  /* ── 선택지 ───────────────────────────────────────────────────── */
+  /* 네이티브 라디오/체크박스는 16px 고정이라 작다. 숨기고 22px 표식을 직접 그린다
+     (원형=하나만 선택, 사각=여러 개 선택으로 모양이 분명히 갈린다). */
+  .opt-list { display: flex; flex-direction: column; gap: 8px; }
   .opt {
-    display: flex; align-items: flex-start; gap: 11px;
-    padding: 13px 14px; border: 1px solid var(--line); border-radius: 9px;
-    background: var(--radio-bg); cursor: pointer; font-size: 15px;
-    transition: border-color .15s ease, background .15s ease;
+    display: flex; align-items: center; gap: 12px;
+    min-height: var(--h-opt); padding: 11px 14px;
+    border: 1px solid var(--edge-i); border-radius: var(--r-opt);
+    background: var(--surface-2); cursor: pointer;
+    font-size: var(--fs-opt); line-height: 1.4;
+    transition: border-color .13s ease, background .13s ease;
   }
-  .opt:hover { border-color: var(--line-strong); }
-  .opt.checked { border-color: var(--accent); background: var(--accent-soft); }
-  /* 라디오/체크박스 크기를 고정해야 브라우저별 기본 크기 차이 없이 첫 줄 중앙에 맞는다.
-     (1.65 × 15px = 24.75px 줄높이 − 16px) / 2 ≈ 4px */
-  .opt > input {
-    width: 16px; height: 16px; margin: 4px 0 0;
-    accent-color: var(--accent); flex: none;
+  .opt:hover { border-color: var(--edge-i-hover); background: var(--surface-3); }
+  .opt:has(input:focus-visible) { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
+  /* 숨기는 대상은 라디오·체크박스뿐이다. 타입을 명시하지 않으면 같은 .opt 안의
+     "기타" 자유입력칸까지 함께 숨겨진다(선택자 우선순위가 .inline-text보다 높다). */
+  .opt > input[type="radio"], .opt > input[type="checkbox"] {
+    position: absolute; opacity: 0; width: 0; height: 0;
   }
+  .opt .mark {
+    width: 22px; height: 22px; flex: none; border: 2px solid var(--edge-i);
+    background: var(--bg); display: grid; place-items: center; color: transparent;
+    transition: border-color .13s ease, background .13s ease;
+  }
+  .opt .mark.radio { border-radius: 50%; }
+  .opt .mark.check { border-radius: 2px; }
+  .opt .mark svg { width: 13px; height: 13px; }
+  .opt .mark .dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
   .opt .opt-text { flex: 1; }
-  .opt input.inline-text {
-    margin: 0 0 0 2px; width: auto; min-width: 90px; vertical-align: middle;
-    padding: 4px 8px; font-size: 13.5px;
-  }
+  .opt .opt-desc { display: block; font-size: var(--fs-desc); color: var(--muted); margin-top: 1px; line-height: 1.4; }
+  .opt.on { border-color: var(--gold); background: var(--sel-bg); box-shadow: inset 0 0 0 1px var(--gold); }
+  .opt.on .mark { border-color: var(--gold); background: var(--gold); color: var(--on-gold); }
+  .opt.on .opt-desc { color: var(--text-2); }
+  /* 줄이 길어지는 항목(동의문 등)은 표식을 첫 줄에 맞춰 위로 붙인다. */
+  .opt.top { align-items: flex-start; }
+  .opt.top .mark { margin-top: 2px; }
 
-  .inline-fields { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .inline-fields input[type="text"] { width: 90px; flex: none; }
-
-  .consent-box {
-    display: flex; gap: 10px; align-items: flex-start;
-    padding: 14px 16px; border: 1px solid var(--line-strong); border-radius: 8px;
-    background: var(--radio-bg); font-size: 13.5px; color: var(--ink-soft);
+  /* "기타 — 직접 기재" 같은 인라인 입력. 터치 타깃 확보를 위해 40px를 준다. */
+  .inline-text {
+    height: 40px; min-width: 120px; width: auto; flex: 1;
+    font-size: 15px; padding: 0 11px; margin-left: 8px;
   }
-  /* (1.65 × 13.5px = 22.3px − 16px) / 2 ≈ 3px */
-  .consent-box input { width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--accent); flex: none; }
-  /* 캡차 미사용 시 빈 div가 유령 여백을 만들지 않도록 */
-  #turnstileBox:empty { display: none; }
+  /* gap 단축값은 "행 열" 순서다 — 열 간격을 0으로 두면 .opt의 12px 간격이 사라진다. */
+  .opt-inline { flex-wrap: wrap; gap: 8px 12px; }
+  /* 인라인 입력은 좁은 화면에서 표식·라벨 아래 줄로 내려가 온전한 폭을 갖는다. */
+  .opt-inline .inline-text { margin-left: 0; flex: 1 1 200px; }
 
-  /* nav buttons — anchored to the bottom of each step's own card, not fixed to the viewport */
-  .navbar {
-    margin-top: var(--gap-lg); padding-top: var(--gap-md); border-top: 1px solid var(--line);
+  /* 보기가 짧은 문항(규모·매출 등)은 한 줄에 여러 개를 놓아 세로 길이를 줄인다. */
+  .chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+  .chip {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 50px; padding: 10px 12px;
+    border: 1px solid var(--edge-i); border-radius: var(--r-opt);
+    background: var(--surface-2); cursor: pointer;
+    font-size: 15.5px; font-weight: 600; text-align: center; line-height: 1.3;
+    transition: border-color .13s ease, background .13s ease;
   }
+  .chip:hover { border-color: var(--edge-i-hover); background: var(--surface-3); }
+  .chip > input[type="radio"], .chip > input[type="checkbox"] {
+    position: absolute; opacity: 0; width: 0; height: 0;
+  }
+  .chip:has(input:focus-visible) { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
+  .chip.on { border-color: var(--gold); background: var(--sel-bg); color: var(--gold-hi); box-shadow: inset 0 0 0 1px var(--gold); }
+  .chip .inline-text { margin-left: 0; min-width: 0; font-size: 14px; height: 34px; }
+
+  /* ── Q4 업무 영역 머리말 ──────────────────────────────────────── */
+  /* 사용자는 시스템 이름(MES/PLM/ERP)보다 자기 업무를 먼저 인식한다.
+     그래서 업무 표현을 제목으로 두고 시스템 약어는 보조 라벨로만 붙인다. */
+  .zone-head { display: flex; align-items: center; gap: 11px; margin: 0 0 var(--s3); }
+  .zone-ic {
+    width: 42px; height: 42px; flex: none; border-radius: 2px;
+    display: grid; place-items: center;
+    background: var(--surface-3); color: var(--gold); border: 1px solid var(--edge);
+  }
+  .zone-ic svg { width: 23px; height: 23px; }
+  .zone-t { font-size: var(--fs-qtitle); font-weight: 800; line-height: 1.25; }
+  .zone-t em {
+    display: block; font-style: normal; font-size: 12.5px; font-weight: 700;
+    color: var(--muted); letter-spacing: .06em; margin-top: 2px;
+  }
+  .subdots { display: flex; gap: 5px; margin-left: auto; flex: none; }
+  .subdot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-3); border: 1px solid var(--edge-i); }
+  .subdot.on { background: var(--gold); border-color: var(--gold); }
+
+  /* ── Q4 업무 영역 접이식 목록 ──────────────────────────────── */
+  /* 19개 항목을 한 화면에 두되, 영역 단위로 접어 응답자가 자기 업무만 펼쳐 보게 한다. */
+  .acc { border: 1px solid var(--edge-i); border-radius: var(--r-opt); background: var(--surface-2); margin-bottom: 8px; }
+  .acc:last-of-type { margin-bottom: 0; }
+  .acc-h {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 13px 14px; min-height: var(--h-opt);
+    background: none; border: none; color: var(--text); font-family: inherit; text-align: left;
+    font-size: 17px; font-weight: 800; cursor: pointer; border-radius: var(--r-opt);
+  }
+  .acc-h:hover { background: var(--surface-3); }
+  .acc-h:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: -3px; }
+  .acc-ic { width: 34px; height: 34px; flex: none; border-radius: 2px; display: grid; place-items: center;
+    background: var(--surface-3); border: 1px solid var(--edge); color: var(--gold); }
+  .acc-ic svg { width: 19px; height: 19px; }
+  .acc-t { flex: 1; line-height: 1.25; }
+  .acc-t em { display: block; font-style: normal; font-size: 12px; font-weight: 700;
+    color: var(--muted); letter-spacing: .06em; margin-top: 2px; }
+  .acc-cnt { flex: none; font-size: 13px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .acc-cnt b { color: var(--gold); }
+  .acc-arw { width: 15px; height: 15px; flex: none; color: var(--muted); transition: transform .16s ease; }
+  .acc.open > .acc-h .acc-arw { transform: rotate(180deg); }
+  .acc-b { display: none; padding: 0 12px 12px; }
+  .acc.open > .acc-b { display: block; }
+  /* 펼쳐진 영역은 머리말과 본문이 한 덩어리로 보이도록 경계를 세운다. */
+  .acc.open { border-color: var(--edge-i-hover); }
+  .acc.open > .acc-h { border-bottom: 1px solid var(--edge); border-radius: var(--r-opt) var(--r-opt) 0 0; margin-bottom: 12px; }
+  /* 영역에 속하지 않는 마무리 항목(기타·해당 없음) */
+  .q4-tail { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--edge); }
+  .q4-tail .opt-list { gap: 8px; }
+
+
+  /* ── 버튼 ─────────────────────────────────────────────────────── */
+  .navbar { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--edge); }
   .step-error {
-    color: var(--required); font-size: 13px; margin: 0 0 var(--gap-sm); text-align: center;
-    display: none;
+    display: none; color: var(--req); font-size: 14px; font-weight: 700;
+    margin: 0 0 var(--s2); text-align: center;
   }
-  .navbar-inner {
-    display: flex; justify-content: center; gap: var(--gap-sm);
-  }
-  .navbar button {
-    font-family: inherit; font-size: 15px; font-weight: 700; line-height: 1.2;
-    border-radius: 9px; padding: 14px; cursor: pointer;
-    /* 기본 150px, 좁은 화면에서는 줄어들되 늘어나지는 않는다 */
-    flex: 0 1 150px; min-width: 0;
+  .navbar-inner { display: flex; gap: var(--s2); max-width: 480px; margin: 0 auto; }
+  .btn {
+    font-family: inherit; font-size: var(--fs-btn); font-weight: 800; line-height: 1.2;
+    height: var(--h-btn); padding: 0 18px; border-radius: var(--r-btn); cursor: pointer;
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .13s ease, border-color .13s ease;
   }
-  .navbar button:disabled { cursor: default; opacity: .85; }
+  .btn:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: .55; cursor: default; transform: none; }
+  #prevBtn { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--edge-i); flex: 0 0 118px; }
+  #prevBtn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--edge-i-hover); }
+  #nextBtn { background: var(--gold); color: var(--on-gold); border: 1px solid var(--gold); flex: 1; }
+  #nextBtn:hover:not(:disabled) { background: var(--gold-hi); border-color: var(--gold-hi); }
   /* 제출 중 버튼 안에 도는 원형 스피너. 색은 버튼 글자색을 그대로 따른다. */
   .btn-spinner {
     display: none; width: 15px; height: 15px; flex: none;
     border: 2px solid currentColor; border-top-color: transparent;
     border-radius: 50%; animation: spin .7s linear infinite;
   }
-  .navbar button.loading .btn-spinner { display: block; }
+  #nextBtn.loading .btn-spinner { display: block; }
   @keyframes spin { to { transform: rotate(360deg); } }
   /* 움직임 최소화 설정: 회전·왕복 대신 정지 상태로 진행 중임만 표시한다. */
   @media (prefers-reduced-motion: reduce) {
     .btn-spinner { animation: none; border-top-color: currentColor; opacity: .5; }
     .rail-track.busy .rail-busy { animation: none; width: 100%; opacity: .5; }
+    .step.active { animation: none; }
   }
-  #prevBtn {
-    background: var(--radio-bg); color: var(--ink-soft); border: 1px solid var(--line-strong);
-  }
-  #nextBtn {
-    border: none; background: var(--accent); color: var(--accent-ink);
-  }
-  #nextBtn:hover, #prevBtn:hover { filter: brightness(1.05); }
 
-  /* result screen — .wrap의 좌우 여백을 유지하면서 세로 가운데 정렬(margin auto) */
-  #resultScreen { display: none; margin: auto; padding: var(--gap-xl) 20px; }
-  #resultScreen h2 { font-size: 21px; margin: 0 0 var(--gap-xs); }
-  #resultScreen p.lead { color: var(--muted); font-size: 14.5px; margin: 0 0 var(--gap-lg); }
+  /* ── 완료 화면 ────────────────────────────────────────────────── */
+  #thankYouScreen { display: none; flex-direction: column; margin: auto; padding: var(--s5) 20px; }
+  .done-ic {
+    width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;
+    margin: 0 auto var(--s3); background: var(--sel-bg); border: 2px solid var(--ok); color: var(--ok);
+  }
+  .done-ic svg { width: 30px; height: 30px; }
+  .next-steps { margin: var(--s4) 0 0; padding: 0; list-style: none; text-align: left; }
+  .next-steps li {
+    display: flex; gap: 11px; padding: 12px 0; border-top: 1px solid var(--edge);
+    font-size: 15px; color: var(--text-2);
+  }
+  .next-steps li .n {
+    width: 24px; height: 24px; flex: none; border-radius: 50%; background: var(--surface-3);
+    color: var(--gold); font-size: 13px; font-weight: 800; display: grid; place-items: center;
+  }
+  .done-contact {
+    margin-top: var(--s4); padding: 14px 16px; border: 1px solid var(--edge);
+    border-left: 2px solid var(--gold); border-radius: 0;
+    background: var(--surface-2); font-size: 14px; color: var(--text-2); text-align: left;
+  }
+  .done-contact b { display: block; color: var(--text); margin-bottom: 2px; font-size: 13px; }
+  .restart-row { text-align: center; margin-top: var(--s4); }
+  /* 제출이 끝난 사람에게 "처음으로"를 골드 CTA로 내밀면 재제출을 부른다 → 조용한 링크로 둔다. */
+  .link-btn {
+    background: none; border: none; color: var(--muted); font-family: inherit;
+    font-size: 13.5px; text-decoration: underline; cursor: pointer; padding: 8px 12px;
+  }
+  .link-btn:hover { color: var(--text-2); }
+
+  /* ── 수동 접수(실패) 화면 ─────────────────────────────────────── */
+  #resultScreen { display: none; flex-direction: column; margin: auto; padding: var(--s5) 20px; }
   .summary-box {
-    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: 18px 20px; font-size: 13.5px; white-space: pre-wrap; color: var(--ink-soft);
-    max-height: 420px; overflow-y: auto; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-    line-height: 1.55;
+    background: var(--surface-2); border: 1px solid var(--edge); border-radius: 3px;
+    padding: 16px 18px; font-size: 13.5px; white-space: pre-wrap; color: var(--text-2);
+    max-height: 380px; overflow-y: auto; line-height: 1.55;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   }
-  .action-row { display: flex; gap: var(--gap-sm); margin-top: var(--gap-md); flex-wrap: wrap; }
+  .action-row { display: flex; gap: var(--s2); margin-top: var(--s3); flex-wrap: wrap; }
   .action-row button {
-    flex: 1 1 140px; min-width: 0; padding: 12px; font-size: 14px; font-weight: 700; line-height: 1.2;
-    border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid var(--line-strong);
-    background: var(--card); color: var(--ink);
+    flex: 1 1 150px; min-width: 0; height: var(--h-btn); padding: 0 14px;
+    font-size: 15px; font-weight: 800; line-height: 1.2; border-radius: var(--r-btn);
+    cursor: pointer; font-family: inherit;
+    border: 1px solid var(--edge-i); background: var(--surface-2); color: var(--text);
   }
-  .action-row button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .note-box {
-    margin-top: var(--gap-lg); padding: 14px 16px; border-radius: 8px;
-    background: var(--accent-soft); color: var(--accent-ink); font-size: 13px;
-  }
-  /* thank-you screen */
-  #thankYouScreen { display: none; margin: auto; padding: var(--gap-xl) 20px; text-align: center; }
-  #thankYouScreen h2 { font-size: 22px; margin: 0 0 var(--gap-sm); }
-  #thankYouScreen p.lead { color: var(--muted); font-size: 14.5px; margin: 0 0 var(--gap-lg); }
-  #thankYouScreen button {
-    font-family: inherit; font-size: 15px; font-weight: 700; line-height: 1.2;
-    border-radius: 9px; padding: 14px 32px; cursor: pointer;
-    border: none; background: var(--accent); color: var(--accent-ink);
-  }
-  #thankYouScreen button:hover { filter: brightness(1.05); }
-
-  /* scroll arrows — hugging the content column's right edge (shown only when the current screen overflows the viewport)
-     720px 칼럼 안쪽 20px 패딩을 빼면 카드 오른쪽 끝은 50% + 340px. 거기서 16px 띄운다. */
-  .scroll-nav {
-    position: fixed; left: calc(50% + 340px + 16px); top: 50%; transform: translateY(-50%);
-    display: none; flex-direction: column; gap: 10px; z-index: 15;
-  }
-  .scroll-nav button {
-    width: 48px; height: 48px; border-radius: 10px; padding: 4px;
-    border: 1px solid var(--line-strong); background: var(--card); color: var(--ink-soft);
-    cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.14); transition: filter .15s ease; font-family: inherit;
-  }
-  .scroll-nav button .arrow-icon { font-size: 13px; line-height: 1; }
-  .scroll-nav button .arrow-label { font-size: 9.5px; line-height: 1; font-weight: 700; letter-spacing: -.02em; }
-  .scroll-nav button:hover { filter: brightness(1.08); }
-  /* 칼럼 바깥에 버튼(48px)이 온전히 들어가려면 뷰포트가 824px 이상이어야 한다.
-     그보다 좁으면 카드 위에 겹쳐 입력 항목을 가리므로 아예 숨긴다(터치·트랙패드 스크롤로 충분). */
-  @media (max-width: 860px) {
-    .scroll-nav { display: none !important; }
-  }
+  .action-row button:hover { background: var(--surface-3); border-color: var(--edge-i-hover); }
+  .action-row button.primary { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+  .action-row button.primary:hover { background: var(--gold-hi); border-color: var(--gold-hi); }
+  .action-row button:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 2px; }
 
   .toast {
-    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 20px;
-    font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 20;
+    position: fixed; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); left: 50%;
+    transform: translateX(-50%); background: var(--text); color: var(--bg);
+    padding: 11px 18px; border-radius: 3px; font-size: 13.5px; font-weight: 700;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 20;
   }
   .toast.show { opacity: 1; }
 
-  /* 좁은 화면: 화면 여백과 카드 여백을 함께 줄여 본문 폭을 확보한다. */
-  @media (max-width: 520px) {
-    #stepArea { padding: 20px 14px; }
-    .card { padding: 20px 18px; }
-    .row2 { grid-template-columns: 1fr; gap: var(--gap-md); }
-    #resultScreen, #thankYouScreen { padding: var(--gap-lg) 14px; }
-    h1.title { font-size: 23px; }
-    h2.qtitle { font-size: 17.5px; }
-    .opt { padding: 12px; font-size: 14.5px; }
-    .navbar button { flex: 1 1 0; padding: 13px 10px; }
+  /* ── 좁은 화면 ───────────────────────────────────────────────── */
+  @media (max-width: 560px) {
+    :root { --fs-h1: 24px; --fs-qtitle: 20px; --fs-opt: 16px; }
+    #stepArea { padding: var(--s4) 14px; }
+    .card { padding: var(--s4) 16px 18px; }
+    .row2 { grid-template-columns: 1fr; gap: var(--s3); }
+    #resultScreen, #thankYouScreen { padding: var(--s4) 14px; }
+    #prevBtn { flex: 0 0 96px; padding: 0 12px; }
+    .zone-ic { width: 38px; height: 38px; }
+    .zone-ic svg { width: 21px; height: 21px; }
   }
 </style>
 
 <div class="rail" id="topRail">
   <div class="rail-inner">
-    <div class="rail-track" id="railTrack"><div class="rail-fill" id="railFill"></div><div class="rail-busy"></div></div>
-    <div class="rail-label">
-      <span class="rail-brand">오르카아이티 · AI사업부</span>
-      <span id="railStep">시작 전</span>
+    <div class="rail-top">
+      <span class="rail-brand">
+        <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+        오르카아이티 · AI사업부
+      </span>
+      <span class="rail-count" id="railCount">시작 전</span>
     </div>
+    <div class="rail-track" id="railTrack"><div class="rail-fill" id="railFill"></div><div class="rail-busy"></div></div>
   </div>
 </div>
 
 <main id="wizard">
   <div id="stepArea" class="wrap">
 
-    <!-- INTRO -->
+    <!-- ══ 인트로 ══ -->
     <div class="step card active" data-step="intro">
-      <div class="eyebrow">오르카아이티 · AI사업부</div>
-      <h1 class="title">고객 AI 도입 의향 조사 안내</h1>
-      <p class="sub">응답에는 약 5분이 소요됩니다. 수집된 정보는 본 조사 목적 외에는 사용하지 않습니다.</p>
+      <div class="masthead">
+        <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+        <span class="who">오르카아이티 AI사업부<span>기존 ERP 고객사 대상 공식 조사</span></span>
+      </div>
+      <h1 class="title">고객 AI 도입 의향 조사</h1>
+      <dl class="facts">
+        <div class="fact"><dt>소요 시간</dt><dd>약 5분</dd></div>
+        <div class="fact"><dt>문항 수</dt><dd>9문항</dd></div>
+        <div class="fact"><dt>응답 방식</dt><dd>한 번에 한 문항</dd></div>
+      </dl>
       <hr class="rule" />
-      <div class="letter-body">
+      <div class="letter">
         <p>안녕하십니까. 오르카아이티는 귀사의 ERP 파트너로서, 최근 확산되고 있는 AI 도입 흐름에 대한 귀사의 의견을 여쭙고자 이 서한을 보내드립니다.</p>
         <p>정부는 매년 초 &ldquo;스마트공장구축 - 제조AI 특화&rdquo;(통칭 AI-Agent 지원사업) 공고를 통해 AI 도입 기업에 사업비 일부를 지원합니다. 2026년 선정 사례 기준 총사업비 약 4억원 중 최대 2억원 수준 지원(2027년도 공고는 아직 미발표).</p>
         <p>이번 설문은 귀사의 AI 도입 관심도와 계획을 파악하고, 필요하신 경우 저희 AI사업부가 정부 지원사업 신청을 처음부터 함께 안내해 드리기 위한 것입니다. 참여해 주시면 감사하겠습니다.</p>
       </div>
-      <div class="signature">
-        <div>오르카아이티 정춘용 부사장 배상</div>
-        <div class="contact">문의: 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com <span class="placeholder-note">임시 — 발송 전 확정 필요</span></div>
+      <div class="sign">
+        <div class="name">오르카아이티 정춘용 부사장 배상</div>
+        <div class="contact">문의 · 010-8590-3080 · spragon.yong@gmail.com <span class="placeholder-note">임시 — 발송 전 확정 필요</span></div>
+      </div>
+      <div class="assure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span>응답 내용은 <b>AI 도입 상담과 정부 지원사업 안내 목적으로만</b> 사용하며 제3자에게 제공하지 않습니다. 연락처는 마지막 단계에서 여쭙습니다.</span>
       </div>
     </div>
 
-    <!-- BASIC INFO -->
-    <div class="step card" data-step="basic">
-      <span class="part-num">PART 3</span>
-      <h2 class="qtitle">응답자 기본정보</h2>
-      <div class="qmeta">아래 항목을 입력해 주십시오.</div>
+    <!-- ══ 회사 정보 1 — 식별 ══ -->
+    <div class="step card" data-step="basic1">
+      <span class="steplabel">회사 정보</span>
+      <h2 class="qtitle">귀사와 응답자분을 확인하겠습니다</h2>
+      <div class="qmeta">보내드린 설문과 응답을 연결하기 위한 항목입니다.</div>
+      <div class="field">
+        <label class="flabel" for="q_company">회사명<span class="req">*</span></label>
+        <input type="text" id="q_company" autocomplete="organization" />
+      </div>
+      <div class="row2">
         <div class="field">
-          <label class="flabel">회사명<span class="req">*</span></label>
-          <input type="text" id="q_company" />
-        </div>
-        <div class="row2">
-          <div class="field">
-            <label class="flabel">담당자 성명<span class="req">*</span></label>
-            <input type="text" id="q_name" />
-          </div>
-          <div class="field">
-            <label class="flabel">직책</label>
-            <input type="text" id="q_title" />
-          </div>
-        </div>
-        <div class="row2">
-          <div class="field">
-            <label class="flabel">연락처(전화)<span class="req">*</span></label>
-            <input type="tel" id="q_phone" />
-          </div>
-          <div class="field">
-            <label class="flabel">이메일<span class="req">*</span></label>
-            <input type="email" id="q_email" />
-          </div>
+          <label class="flabel" for="q_name">담당자 성명<span class="req">*</span></label>
+          <input type="text" id="q_name" autocomplete="name" />
         </div>
         <div class="field">
-          <label class="flabel">업종<span class="req">*</span></label>
-          <div class="opt-list" data-group="industry">
-            <label class="opt"><input type="radio" name="industry" value="제조업"><span class="opt-text">제조업 <input type="text" class="inline-text" placeholder="대표제품" data-subfield="industry_detail"></span></label>
-            <label class="opt"><input type="radio" name="industry" value="유통/서비스"><span class="opt-text">유통/서비스</span></label>
-            <label class="opt"><input type="radio" name="industry" value="건설"><span class="opt-text">건설</span></label>
-            <label class="opt"><input type="radio" name="industry" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="industry_etc"></span></label>
-          </div>
+          <label class="flabel" for="q_title">직책<span class="fhint-inline">선택 입력</span></label>
+          <input type="text" id="q_title" autocomplete="organization-title" />
         </div>
-        <div class="field">
-          <label class="flabel">종업원 수<span class="req">*</span></label>
-          <div class="opt-list" data-group="headcount">
-            <label class="opt"><input type="radio" name="headcount" value="10인 미만"><span class="opt-text">10인 미만</span></label>
-            <label class="opt"><input type="radio" name="headcount" value="10~49인"><span class="opt-text">10~49인</span></label>
-            <label class="opt"><input type="radio" name="headcount" value="50~99인"><span class="opt-text">50~99인</span></label>
-            <label class="opt"><input type="radio" name="headcount" value="100~299인"><span class="opt-text">100~299인</span></label>
-            <label class="opt"><input type="radio" name="headcount" value="300인 이상"><span class="opt-text">300인 이상</span></label>
-          </div>
-        </div>
-        <div class="field">
-          <label class="flabel">연매출 규모(대략)<span class="req">*</span></label>
-          <div class="opt-list" data-group="revenue">
-            <label class="opt"><input type="radio" name="revenue" value="50억 미만"><span class="opt-text">50억 미만</span></label>
-            <label class="opt"><input type="radio" name="revenue" value="50~100억"><span class="opt-text">50~100억</span></label>
-            <label class="opt"><input type="radio" name="revenue" value="100~300억"><span class="opt-text">100~300억</span></label>
-            <label class="opt"><input type="radio" name="revenue" value="300~500억"><span class="opt-text">300~500억</span></label>
-            <label class="opt"><input type="radio" name="revenue" value="500억 이상"><span class="opt-text">500억 이상</span></label>
-          </div>
-        </div>
-        <div class="field">
-          <label class="flabel">현재 사용 중인 ERP<span class="req">*</span></label>
-          <div class="opt-list" data-group="erp">
-            <label class="opt"><input type="radio" name="erp" value="영림원 K-System"><span class="opt-text">영림원 K-System</span></label>
-            <label class="opt"><input type="radio" name="erp" value="QAD ERP"><span class="opt-text">QAD ERP</span></label>
-            <label class="opt"><input type="radio" name="erp" value="SAP ERP"><span class="opt-text">SAP ERP</span></label>
-            <label class="opt"><input type="radio" name="erp" value="오라클(Oracle) ERP"><span class="opt-text">오라클(Oracle) ERP</span></label>
-            <label class="opt"><input type="radio" name="erp" value="더존(Douzone) ERP"><span class="opt-text">더존(Douzone) ERP</span></label>
-            <label class="opt"><input type="radio" name="erp" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="erp_etc"></span></label>
-          </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Q1 -->
+    <!-- ══ 회사 정보 2 — 규모·ERP ══ -->
+    <div class="step card" data-step="basic2">
+      <span class="steplabel">회사 정보</span>
+      <h2 class="qtitle">귀사의 규모와 사용 중인 ERP를 알려주십시오</h2>
+      <div class="qmeta"><span class="tag">4개 항목</span>각 항목에서 하나씩 선택해 주십시오.</div>
+      <div class="field">
+        <label class="flabel">업종<span class="req">*</span></label>
+        <div class="chips" data-group="industry">
+          <label class="chip"><input type="radio" name="industry" value="제조업"><span>제조업</span></label>
+          <label class="chip"><input type="radio" name="industry" value="유통/서비스"><span>유통 / 서비스</span></label>
+          <label class="chip"><input type="radio" name="industry" value="건설"><span>건설</span></label>
+          <label class="chip"><input type="radio" name="industry" value="기타"><span>기타</span></label>
+        </div>
+        <input type="text" class="inline-text" style="margin:8px 0 0;width:100%;height:44px" placeholder="대표제품 또는 업종을 적어주십시오 (선택)" data-subfield="industry_detail" data-reveal-when="industry:제조업,기타" hidden />
+      </div>
+      <div class="field">
+        <label class="flabel">종업원 수<span class="req">*</span></label>
+        <div class="chips" data-group="headcount">
+          <label class="chip"><input type="radio" name="headcount" value="10인 미만"><span>10인 미만</span></label>
+          <label class="chip"><input type="radio" name="headcount" value="10~49인"><span>10~49인</span></label>
+          <label class="chip"><input type="radio" name="headcount" value="50~99인"><span>50~99인</span></label>
+          <label class="chip"><input type="radio" name="headcount" value="100~299인"><span>100~299인</span></label>
+          <label class="chip"><input type="radio" name="headcount" value="300인 이상"><span>300인 이상</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">연매출 규모<span class="fhint">대략적인 구간이면 충분합니다</span></label>
+        <div class="chips" data-group="revenue">
+          <label class="chip"><input type="radio" name="revenue" value="50억 미만"><span>50억 미만</span></label>
+          <label class="chip"><input type="radio" name="revenue" value="50~100억"><span>50~100억</span></label>
+          <label class="chip"><input type="radio" name="revenue" value="100~300억"><span>100~300억</span></label>
+          <label class="chip"><input type="radio" name="revenue" value="300~500억"><span>300~500억</span></label>
+          <label class="chip"><input type="radio" name="revenue" value="500억 이상"><span>500억 이상</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">현재 사용 중인 ERP<span class="req">*</span></label>
+        <div class="chips" data-group="erp">
+          <label class="chip"><input type="radio" name="erp" value="영림원 K-System"><span>영림원 K-System</span></label>
+          <label class="chip"><input type="radio" name="erp" value="QAD ERP"><span>QAD ERP</span></label>
+          <label class="chip"><input type="radio" name="erp" value="SAP ERP"><span>SAP ERP</span></label>
+          <label class="chip"><input type="radio" name="erp" value="오라클(Oracle) ERP"><span>오라클 ERP</span></label>
+          <label class="chip"><input type="radio" name="erp" value="더존(Douzone) ERP"><span>더존 ERP</span></label>
+          <label class="chip"><input type="radio" name="erp" value="기타"><span>기타</span></label>
+        </div>
+        <input type="text" class="inline-text" style="margin:8px 0 0;width:100%;height:44px" placeholder="사용 중인 ERP 이름을 적어주십시오" data-subfield="erp_etc" data-reveal-when="erp:기타" hidden />
+      </div>
+    </div>
+
+    <!-- ══ Q1 ══ -->
     <div class="step card" data-step="q1">
-      <span class="part-num">PART 4 · Q1</span>
-      <h2 class="qtitle">귀사는 ERP시스템을 어느 정도 잘 활용하고 계십니까?</h2>
-      <div class="qmeta">단일 선택</div>
+      <div class="qhead"><span class="qno">Q1.</span><h2 class="qtitle">귀사는 ERP시스템을 어느 정도 잘 활용하고 계십니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span>가장 가까운 것을 골라주십시오.</div>
       <div class="opt-list" data-group="q1">
-        <label class="opt"><input type="radio" name="q1" value="전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다"><span class="opt-text">전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다</span></label>
-        <label class="opt"><input type="radio" name="q1" value="주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다"><span class="opt-text">주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다</span></label>
-        <label class="opt"><input type="radio" name="q1" value="기본적인 데이터 입력·조회 수준에 머물러 있다"><span class="opt-text">기본적인 데이터 입력·조회 수준에 머물러 있다</span></label>
-        <label class="opt"><input type="radio" name="q1" value="도입은 했으나 전반적으로 활용도가 낮은 편이다"><span class="opt-text">도입은 했으나 전반적으로 활용도가 낮은 편이다</span></label>
-        <label class="opt"><input type="radio" name="q1" value="잘 모르겠다 / 담당 업무가 아니다"><span class="opt-text">잘 모르겠다 / 담당 업무가 아니다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">전사 핵심업무(생산·재고·회계 등) 전반에 걸쳐 적극적으로 활용하고 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">주요 업무 위주로 활용하고 있으나, 일부 기능은 제대로 활용하지 못하고 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="기본적인 데이터 입력·조회 수준에 머물러 있다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">기본적인 데이터 입력·조회 수준에 머물러 있다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="도입은 했으나 전반적으로 활용도가 낮은 편이다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">도입은 했으나 전반적으로 활용도가 낮은 편이다</span></label>
+        <label class="opt"><input type="radio" name="q1" value="잘 모르겠다 / 담당 업무가 아니다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">잘 모르겠다 / 담당 업무가 아니다</span></label>
       </div>
     </div>
 
-    <!-- Q2 -->
+    <!-- ══ Q2 ══ -->
     <div class="step card" data-step="q2">
-      <span class="part-num">PART 4 · Q2</span>
-      <h2 class="qtitle">귀사는 ERP 외에 AI시스템 도입에 관심이 있으십니까?</h2>
-      <div class="qmeta">단일 선택</div>
+      <div class="qhead"><span class="qno">Q2.</span><h2 class="qtitle">귀사는 ERP 외에 AI시스템 도입에 관심이 있으십니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span></div>
       <div class="opt-list" data-group="q2">
-        <label class="opt"><input type="radio" name="q2" value="매우 관심이 많다 (구체적으로 검토·조사 중이다)"><span class="opt-text">매우 관심이 많다 (구체적으로 검토·조사 중이다)</span></label>
-        <label class="opt"><input type="radio" name="q2" value="관심이 있다 (아직 구체적인 계획은 없다)"><span class="opt-text">관심이 있다 (아직 구체적인 계획은 없다)</span></label>
-        <label class="opt"><input type="radio" name="q2" value="보통이다 (필요성은 느끼나 우선순위가 높지 않다)"><span class="opt-text">보통이다 (필요성은 느끼나 우선순위가 높지 않다)</span></label>
-        <label class="opt"><input type="radio" name="q2" value="관심이 적은 편이다"><span class="opt-text">관심이 적은 편이다</span></label>
-        <label class="opt"><input type="radio" name="q2" value="전혀 관심이 없다"><span class="opt-text">전혀 관심이 없다</span></label>
+        <label class="opt"><input type="radio" name="q2" value="매우 관심이 많다 (구체적으로 검토·조사 중이다)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">매우 관심이 많다<span class="opt-desc">구체적으로 검토·조사 중이다</span></span></label>
+        <label class="opt"><input type="radio" name="q2" value="관심이 있다 (아직 구체적인 계획은 없다)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">관심이 있다<span class="opt-desc">아직 구체적인 계획은 없다</span></span></label>
+        <label class="opt"><input type="radio" name="q2" value="보통이다 (필요성은 느끼나 우선순위가 높지 않다)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">보통이다<span class="opt-desc">필요성은 느끼나 우선순위가 높지 않다</span></span></label>
+        <label class="opt"><input type="radio" name="q2" value="관심이 적은 편이다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">관심이 적은 편이다</span></label>
+        <label class="opt"><input type="radio" name="q2" value="전혀 관심이 없다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">전혀 관심이 없다</span></label>
       </div>
     </div>
 
-    <!-- Q3 -->
+    <!-- ══ Q3 ══ -->
     <div class="step card" data-step="q3">
-      <span class="part-num">PART 4 · Q3</span>
-      <h2 class="qtitle">AI시스템을 실제 예산을 들여 도입한다면, 그 시기는 언제로 계획하십니까?</h2>
-      <div class="qmeta">단일 선택</div>
+      <div class="qhead"><span class="qno">Q3.</span><h2 class="qtitle">AI시스템을 실제 예산을 들여 도입한다면, 그 시기는 언제로 계획하십니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span></div>
       <div class="opt-list" data-group="q3">
-        <label class="opt"><input type="radio" name="q3" value="이미 도입했거나 진행 중이다"><span class="opt-text">이미 도입했거나 진행 중이다</span></label>
-        <label class="opt"><input type="radio" name="q3" value="2026년 내 (올해)"><span class="opt-text">2026년 내 (올해)</span></label>
-        <label class="opt"><input type="radio" name="q3" value="2027년 이내"><span class="opt-text">2027년 이내</span></label>
-        <label class="opt"><input type="radio" name="q3" value="2028년 이내"><span class="opt-text">2028년 이내</span></label>
-        <label class="opt"><input type="radio" name="q3" value="2029년 이후 또는 아직 계획이 없다"><span class="opt-text">2029년 이후 또는 아직 계획이 없다</span></label>
-        <label class="opt"><input type="radio" name="q3" value="아직 시기를 정하지 못했다"><span class="opt-text">아직 시기를 정하지 못했다</span></label>
+        <label class="opt"><input type="radio" name="q3" value="이미 도입했거나 진행 중이다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">이미 도입했거나 진행 중이다</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2026년 내 (올해)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">2026년 내 (올해)</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2027년 이내"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">2027년 이내</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2028년 이내"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">2028년 이내</span></label>
+        <label class="opt"><input type="radio" name="q3" value="2029년 이후 또는 아직 계획이 없다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">2029년 이후 또는 아직 계획이 없다</span></label>
+        <label class="opt"><input type="radio" name="q3" value="아직 시기를 정하지 못했다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">아직 시기를 정하지 못했다</span></label>
       </div>
     </div>
 
-    <!-- Q4 -->
+    <!-- ══ Q4 — 19개 항목을 업무 영역별 접이식 목록 하나로 묶는다 ══ -->
     <div class="step card" data-step="q4">
-      <span class="part-num">PART 4 · Q4</span>
-      <h2 class="qtitle">AI시스템을 도입한다면 어느 분야에 우선 도입하려 하십니까?</h2>
-      <div class="qmeta">복수 선택</div>
-      <div class="opt-list" data-group="q4" data-multi="true">
-        <label class="opt"><input type="checkbox" name="q4" value="생산/제조 현장 (설비 예지보전·품질검사·공정 최적화 등)"><span class="opt-text">생산/제조 현장 (설비 예지보전·품질검사·공정 최적화 등)</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="구매/자재/재고관리 (SCM)"><span class="opt-text">구매/자재/재고관리 (SCM)</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="영업/수요예측"><span class="opt-text">영업/수요예측</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="회계/재무"><span class="opt-text">회계/재무</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="인사/총무"><span class="opt-text">인사/총무</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="고객상담/CS"><span class="opt-text">고객상담/CS</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="경영진 의사결정 지원 (BI·경영 리포트)"><span class="opt-text">경영진 의사결정 지원 (BI·경영 리포트)</span></label>
-        <label class="opt"><input type="checkbox" name="q4" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q4_etc"></span></label>
-      </div>
-    </div>
-
-    <!-- Q5 -->
-    <div class="step card" data-step="q5">
-      <span class="part-num">PART 4 · Q5</span>
-      <h2 class="qtitle">AI 도입 이후 가장 기대하는 효과는 무엇입니까?</h2>
-      <div class="qmeta">복수 선택</div>
-      <div class="opt-list" data-group="q5" data-multi="true">
-        <label class="opt"><input type="checkbox" name="q5" value="생산성 향상 / 인력 효율화"><span class="opt-text">생산성 향상 / 인력 효율화</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="불량률 감소 / 품질 향상"><span class="opt-text">불량률 감소 / 품질 향상</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="데이터 기반 의사결정 속도 향상"><span class="opt-text">데이터 기반 의사결정 속도 향상</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="비용 절감"><span class="opt-text">비용 절감</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="신규 매출 / 사업기회 창출"><span class="opt-text">신규 매출 / 사업기회 창출</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="업무 표준화 및 프로세스 개선"><span class="opt-text">업무 표준화 및 프로세스 개선</span></label>
-        <label class="opt"><input type="checkbox" name="q5" value="기타"><span class="opt-text">기타 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q5_etc"></span></label>
-      </div>
-    </div>
-
-    <!-- Q6 -->
-    <div class="step card" data-step="q6">
-      <span class="part-num">PART 4 · Q6</span>
-      <h2 class="qtitle">정부는 2027년 스마트공장 제조특화AI사업(AI-Agent개발 포함)을 통해 제조기업이 AI시스템을 도입하는데 사업비 50%를 지원하고 있습니다.</h2>
-      <div class="qmeta">2026년 10월말 사업공고, 2027년 1월 초 신청예정 — 이러한 정부 지원사업에 참여하실 의향이 있으십니까? · 단일 선택</div>
-      <div class="opt-list" data-group="q6">
-        <label class="opt"><input type="radio" name="q6" value="매우 적극적으로 참여하고 싶다"><span class="opt-text">매우 적극적으로 참여하고 싶다</span></label>
-        <label class="opt"><input type="radio" name="q6" value="조건(지원 규모·자기부담 등)에 따라 참여를 검토하겠다"><span class="opt-text">조건(지원 규모·자기부담 등)에 따라 참여를 검토하겠다</span></label>
-        <label class="opt"><input type="radio" name="q6" value="아직 판단하기 이르다 (추가 정보가 필요하다)"><span class="opt-text">아직 판단하기 이르다 (추가 정보가 필요하다)</span></label>
-        <label class="opt"><input type="radio" name="q6" value="참여 의사가 없다"><span class="opt-text">참여 의사가 없다</span></label>
-        <label class="opt"><input type="radio" name="q6" value="기타의견"><span class="opt-text">기타의견 <input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q6_etc"></span></label>
-      </div>
-    </div>
-
-    <!-- Q6-1 -->
-    <div class="step card" data-step="q6_1">
-      <span class="part-num">PART 4 · Q6-1</span>
-      <h2 class="qtitle">과거 정부 지원사업(스마트공장 구축, 제조업 R&amp;D 등)에 신청하거나 선정된 경험이 있으십니까?</h2>
-      <div class="qmeta">단일 선택</div>
-      <div class="opt-list" data-group="q6_1">
-        <label class="opt"><input type="radio" name="q6_1" value="있다 — 선정되어 사업을 수행한 경험이 있다"><span class="opt-text">있다 — 선정되어 사업을 수행한 경험이 있다 <input type="text" class="inline-text" placeholder="아신다면: 예) 2023년, OO스마트공장구축사업" data-subfield="q6_1_detail"></span></label>
-        <label class="opt"><input type="radio" name="q6_1" value="있다 — 신청했으나 선정되지 못한 경험이 있다"><span class="opt-text">있다 — 신청했으나 선정되지 못한 경험이 있다</span></label>
-        <label class="opt"><input type="radio" name="q6_1" value="없다 — 신청해본 적이 없다"><span class="opt-text">없다 — 신청해본 적이 없다</span></label>
-        <label class="opt"><input type="radio" name="q6_1" value="없다 — 관련 정보를 잘 모른다"><span class="opt-text">없다 — 관련 정보를 잘 모른다</span></label>
-      </div>
-    </div>
-
-    <!-- Q7 -->
-    <div class="step card" data-step="q7">
-      <span class="part-num">PART 4 · Q7</span>
-      <h2 class="qtitle">저희 오르카아이티 AI사업부가 정부 지원사업 신청 준비부터 AI 프로젝트 수행까지 처음부터 함께 안내해 드린다면, 함께 신청하시겠습니까?</h2>
-      <div class="qmeta">단일 선택</div>
-      <div class="opt-list" data-group="q7">
-        <label class="opt"><input type="radio" name="q7" value="예, 적극적으로 함께 신청하고 싶다" data-followup="show"><span class="opt-text">예, 적극적으로 함께 신청하고 싶다</span></label>
-        <label class="opt"><input type="radio" name="q7" value="관심은 있으나 사전 설명(설명회·미팅)을 먼저 받아보고 싶다" data-followup="show"><span class="opt-text">관심은 있으나 사전 설명(설명회·미팅)을 먼저 받아보고 싶다</span></label>
-        <label class="opt"><input type="radio" name="q7" value="아직 결정하기 이르다" data-followup="hide"><span class="opt-text">아직 결정하기 이르다</span></label>
-        <label class="opt"><input type="radio" name="q7" value="신청 의사가 없다" data-followup="hide"><span class="opt-text">신청 의사가 없다</span></label>
-      </div>
-    </div>
-
-    <!-- Q7-1 (conditional) -->
-    <div class="step card" data-step="q7_1">
-      <span class="part-num">PART 4 · Q7-1</span>
-      <h2 class="qtitle">담당자와의 후속 미팅을 희망하시는 시기를 알려주십시오.</h2>
-      <div class="qmeta">단일 선택</div>
-      <div class="opt-list" data-group="q7_1">
-        <label class="opt"><input type="radio" name="q7_1" value="가능한 빨리 (1~2주 이내)"><span class="opt-text">가능한 빨리 (1~2주 이내)</span></label>
-        <label class="opt"><input type="radio" name="q7_1" value="1개월 이내"><span class="opt-text">1개월 이내</span></label>
-        <label class="opt"><input type="radio" name="q7_1" value="2~3개월 이내"><span class="opt-text">2~3개월 이내</span></label>
-        <label class="opt"><input type="radio" name="q7_1" value="아직 시기를 정하기 어렵다"><span class="opt-text">아직 시기를 정하기 어렵다</span></label>
-      </div>
-    </div>
-
-    <!-- FINAL -->
-    <div class="step card" data-step="final">
-      <span class="part-num">PART 5</span>
-      <h2 class="qtitle">설문에 참여해 주셔서 진심으로 감사드립니다</h2>
-      <div class="qmeta">회신 주신 내용은 담당자가 개별 확인 후 순차적으로 연락드리겠습니다.</div>
-        <p style="font-size:13px; color:var(--muted); margin:0 0 14px;">개인정보 수집·이용 동의: 본 설문에서 수집하는 개인정보(담당자 성명·연락처)는 AI 도입 상담 및 정부 지원사업 안내 목적으로만 사용되며, 목적 달성 후 관련 법령에 따라 파기됩니다. 동의를 거부하실 수 있으며, 이 경우 후속 상담 안내가 제한될 수 있습니다.</p>
-        <label class="consent-box">
-          <input type="checkbox" id="q_consent" />
-          <span>위 내용에 동의하며, 설문에 성실히 응답합니다.<span class="req">*</span></span>
-        </label>
-        <!-- 자동 제출 방지 위젯 (TURNSTILE_SITE_KEY 설정 시에만 표시) -->
-        <div id="turnstileBox" style="margin-top:16px;"></div>
-        <!-- 허니팟: 사람에게는 보이지 않는 필드. 봇이 채우면 서버가 조용히 폐기한다. -->
-        <div aria-hidden="true" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;">
-          <label>이 항목은 비워두십시오
-            <input type="text" id="hp_website" name="website" tabindex="-1" autocomplete="off" />
-          </label>
+      <div class="qhead"><span class="qno">Q4.</span><h2 class="qtitle">AI를 도입한다면 어느 업무에 우선 적용하시겠습니까?</h2></div>
+      <div class="qmeta"><span class="tag">여러 개 선택 가능</span>업무 영역을 눌러 펼친 뒤, 관심 있는 항목을 모두 골라주십시오. 해당 업무가 없는 영역은 펼치지 않으셔도 됩니다.</div>
+      <div class="acc-list">
+      <section class="acc open" data-zone="mes">
+        <button class="acc-h" type="button" aria-expanded="true" aria-controls="zone-mes">
+          <span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M4 20V10l5 3V10l5 3V7l6 4v9"/><path d="M8 20v-3"/><path d="M14 20v-3"/></svg></span>
+          <span class="acc-t">생산 현장에서<em>MES · 제조실행 영역</em></span>
+          <span class="acc-cnt" data-count>0 / 6</span>
+          <svg class="acc-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-b" id="zone-mes">
+          <div class="opt-list" data-group="q4" data-multi="true">
+          <label class="opt"><input type="checkbox" name="q4" value="설비 예지보전"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">설비 예지보전<span class="opt-desc">설비 고장 가능성을 미리 예측</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="AI 비전 품질검사"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">AI 비전 품질검사<span class="opt-desc">카메라로 불량·외관 이상 자동 검사</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="공정 이상탐지·수율 분석"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">공정 이상탐지 · 수율 분석<span class="opt-desc">불량 원인과 수율 저하 요인 자동 분석</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="생산계획·일정 최적화"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">생산계획 · 일정 최적화<span class="opt-desc">납기·설비 상황에 맞춘 생산 일정 수립</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="작업일보 자동입력"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">작업일보 자동입력<span class="opt-desc">음성·사진으로 현장 실적 자동 기록</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="현장 안전·작업자 보호"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">현장 안전 · 작업자 보호<span class="opt-desc">영상으로 위험 상황 실시간 감지</span></span></label>
+          </div>
         </div>
+      </section>
+      <section class="acc" data-zone="plm">
+        <button class="acc-h" type="button" aria-expanded="false" aria-controls="zone-plm">
+          <span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7l9 5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg></span>
+          <span class="acc-t">설계 · 개발 업무에서<em>PLM · 제품개발 영역</em></span>
+          <span class="acc-cnt" data-count>0 / 6</span>
+          <svg class="acc-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-b" id="zone-plm">
+          <div class="opt-list" data-group="q4" data-multi="true">
+          <label class="opt"><input type="checkbox" name="q4" value="도면 검색·유사설계 추천"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">도면 검색 · 유사설계 추천<span class="opt-desc">과거 도면을 내용으로 찾아 재활용</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="BOM 자동생성·검증"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">BOM 자동생성 · 검증<span class="opt-desc">자재명세서 자동 작성과 오류 점검</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="견적·원가 자동산출"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">견적 · 원가 자동산출<span class="opt-desc">사양만 넣으면 견적·원가를 산출</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="기술문서·사양서 작성"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">기술문서 · 사양서 작성<span class="opt-desc">사양서·매뉴얼 초안 자동 작성</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="설계변경 영향 분석"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">설계변경 영향 분석<span class="opt-desc">변경 시 영향 범위를 자동 추적</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="시험·인증 데이터 관리"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">시험 · 인증 데이터 관리<span class="opt-desc">시험 성적서·인증 자료 정리와 검색</span></span></label>
+          </div>
+        </div>
+      </section>
+      <section class="acc" data-zone="erp">
+        <button class="acc-h" type="button" aria-expanded="false" aria-controls="zone-erp">
+          <span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5"/><path d="M9 11h2M13 11h2"/></svg></span>
+          <span class="acc-t">경영 · 사무 업무에서<em>ERP · 백오피스 영역</em></span>
+          <span class="acc-cnt" data-count>0 / 7</span>
+          <svg class="acc-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-b" id="zone-erp">
+          <div class="opt-list" data-group="q4" data-multi="true">
+          <label class="opt"><input type="checkbox" name="q4" value="수요예측·판매계획"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">수요예측 · 판매계획<span class="opt-desc">과거 실적을 근거로 판매량 예측</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="구매·적정재고 최적화"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">구매 · 적정재고 최적화<span class="opt-desc">발주 시점과 적정 재고량을 추천</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="전표 자동화·증빙 OCR"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">전표 자동화 · 증빙 OCR<span class="opt-desc">세금계산서·영수증을 자동으로 입력</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="자금수지·현금흐름 예측"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">자금수지 · 현금흐름 예측<span class="opt-desc">향후 자금 부족 시점을 미리 예측</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="경영 리포트·대화형 BI"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">경영 리포트 · 대화형 BI<span class="opt-desc">물어보면 답하는 경영 현황 조회</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="인사·근태·채용 지원"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">인사 · 근태 · 채용 지원<span class="opt-desc">근태 집계와 채용 서류 검토</span></span></label>
+          <label class="opt"><input type="checkbox" name="q4" value="고객상담·CS 챗봇"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">고객상담 · CS 챗봇<span class="opt-desc">반복되는 문의를 자동으로 응대</span></span></label>
+          </div>
+        </div>
+      </section>
+      </div>
+      <div class="q4-tail">
+        <div class="opt-list" data-group="q4" data-multi="true">
+        <label class="opt opt-inline"><input type="checkbox" name="q4" value="기타"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">기타</span><input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q4_etc"></label>
+        <label class="opt"><input type="checkbox" name="q4" value="아직 정하지 못했다" data-exclusive="true"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">아직 정하지 못했다<span class="opt-desc">특별히 떠오르는 분야가 없다</span></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Q5 ══ -->
+    <div class="step card" data-step="q5">
+      <div class="qhead"><span class="qno">Q5.</span><h2 class="qtitle">AI 도입 이후 가장 기대하는 효과는 무엇입니까?</h2></div>
+      <div class="qmeta"><span class="tag">여러 개 선택 가능</span></div>
+      <div class="opt-list" data-group="q5" data-multi="true">
+        <label class="opt"><input type="checkbox" name="q5" value="생산성 향상 / 인력 효율화"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">생산성 향상 / 인력 효율화</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="불량률 감소 / 품질 향상"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">불량률 감소 / 품질 향상</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="데이터 기반 의사결정 속도 향상"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">데이터 기반 의사결정 속도 향상</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="비용 절감"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">비용 절감</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="신규 매출 / 사업기회 창출"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">신규 매출 / 사업기회 창출</span></label>
+        <label class="opt"><input type="checkbox" name="q5" value="업무 표준화 및 프로세스 개선"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">업무 표준화 및 프로세스 개선</span></label>
+        <label class="opt opt-inline"><input type="checkbox" name="q5" value="기타"><span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="opt-text">기타</span><input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q5_etc"></label>
+      </div>
+    </div>
+
+    <!-- ══ Q6 ══ -->
+    <div class="step card" data-step="q6">
+      <div class="qhead"><span class="qno">Q6.</span><h2 class="qtitle">정부 지원사업에 참여하실 의향이 있으십니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span>정부는 2027년 스마트공장 제조특화AI사업(AI-Agent개발 포함)을 통해 제조기업의 AI 도입 사업비 50%를 지원합니다. 2026년 10월말 사업공고, 2027년 1월 초 신청 예정입니다.</div>
+      <div class="opt-list" data-group="q6">
+        <label class="opt"><input type="radio" name="q6" value="매우 적극적으로 참여하고 싶다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">매우 적극적으로 참여하고 싶다</span></label>
+        <label class="opt"><input type="radio" name="q6" value="조건(지원 규모·자기부담 등)에 따라 참여를 검토하겠다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">조건에 따라 참여를 검토하겠다<span class="opt-desc">지원 규모·자기부담 등을 보고 판단</span></span></label>
+        <label class="opt"><input type="radio" name="q6" value="아직 판단하기 이르다 (추가 정보가 필요하다)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">아직 판단하기 이르다<span class="opt-desc">추가 정보가 필요하다</span></span></label>
+        <label class="opt"><input type="radio" name="q6" value="참여 의사가 없다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">참여 의사가 없다</span></label>
+        <label class="opt opt-inline"><input type="radio" name="q6" value="기타의견"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">기타의견</span><input type="text" class="inline-text" placeholder="직접 기재" data-subfield="q6_etc"></label>
+      </div>
+    </div>
+
+    <!-- ══ Q6-1 ══ -->
+    <div class="step card" data-step="q6_1">
+      <div class="qhead"><span class="qno">Q6-1.</span><h2 class="qtitle">과거 정부 지원사업에 신청하거나 선정된 경험이 있으십니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span>스마트공장 구축, 제조업 R&amp;D 등을 포함합니다.</div>
+      <div class="opt-list" data-group="q6_1">
+        <label class="opt opt-inline"><input type="radio" name="q6_1" value="있다 — 선정되어 사업을 수행한 경험이 있다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">있다 — 선정되어 수행한 경험이 있다</span><input type="text" class="inline-text" placeholder="아신다면: 예) 2023년 OO스마트공장구축사업" data-subfield="q6_1_detail"></label>
+        <label class="opt"><input type="radio" name="q6_1" value="있다 — 신청했으나 선정되지 못한 경험이 있다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">있다 — 신청했으나 선정되지 못했다</span></label>
+        <label class="opt"><input type="radio" name="q6_1" value="없다 — 신청해본 적이 없다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">없다 — 신청해본 적이 없다</span></label>
+        <label class="opt"><input type="radio" name="q6_1" value="없다 — 관련 정보를 잘 모른다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">없다 — 관련 정보를 잘 모른다</span></label>
+      </div>
+    </div>
+
+    <!-- ══ Q7 ══ -->
+    <div class="step card" data-step="q7">
+      <div class="qhead"><span class="qno">Q7.</span><h2 class="qtitle">오르카아이티 AI사업부가 신청 준비부터 프로젝트 수행까지 함께 안내해 드린다면, 함께 신청하시겠습니까?</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span></div>
+      <div class="opt-list" data-group="q7">
+        <label class="opt"><input type="radio" name="q7" value="예, 적극적으로 함께 신청하고 싶다" data-followup="show"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">예, 적극적으로 함께 신청하고 싶다</span></label>
+        <label class="opt"><input type="radio" name="q7" value="관심은 있으나 사전 설명(설명회·미팅)을 먼저 받아보고 싶다" data-followup="show"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">관심은 있으나 사전 설명을 먼저 받아보고 싶다<span class="opt-desc">설명회·미팅 등</span></span></label>
+        <label class="opt"><input type="radio" name="q7" value="아직 결정하기 이르다" data-followup="hide"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">아직 결정하기 이르다</span></label>
+        <label class="opt"><input type="radio" name="q7" value="신청 의사가 없다" data-followup="hide"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">신청 의사가 없다</span></label>
+      </div>
+    </div>
+
+    <!-- ══ Q7-1 (조건부) ══ -->
+    <div class="step card" data-step="q7_1">
+      <div class="qhead"><span class="qno">Q7-1.</span><h2 class="qtitle">담당자와의 후속 미팅을 희망하시는 시기를 알려주십시오</h2></div>
+      <div class="qmeta"><span class="tag">하나만 선택</span></div>
+      <div class="opt-list" data-group="q7_1">
+        <label class="opt"><input type="radio" name="q7_1" value="가능한 빨리 (1~2주 이내)"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">가능한 빨리 (1~2주 이내)</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="1개월 이내"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">1개월 이내</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="2~3개월 이내"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">2~3개월 이내</span></label>
+        <label class="opt"><input type="radio" name="q7_1" value="아직 시기를 정하기 어렵다"><span class="mark radio"><span class="dot"></span></span><span class="opt-text">아직 시기를 정하기 어렵다</span></label>
+      </div>
+    </div>
+
+    <!-- ══ 연락처 + 동의 ══ -->
+    <div class="step card" data-step="final">
+      <span class="steplabel">마지막 단계</span>
+      <h2 class="qtitle">답변해 주셔서 감사합니다. 연락 받으실 곳을 알려주십시오</h2>
+      <div class="qmeta">응답 내용에 대해 담당자가 안내드릴 때에만 사용합니다.</div>
+      <div class="row2">
+        <div class="field">
+          <label class="flabel" for="q_phone">연락처(전화)<span class="req">*</span></label>
+          <input type="tel" id="q_phone" autocomplete="tel" placeholder="010-0000-0000" />
+        </div>
+        <div class="field">
+          <label class="flabel" for="q_email">이메일<span class="req">*</span></label>
+          <input type="email" id="q_email" autocomplete="email" placeholder="name@company.co.kr" />
+        </div>
+      </div>
+      <label class="opt top" style="margin-top:var(--s3)">
+        <input type="checkbox" id="q_consent" />
+        <span class="mark check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="opt-text" style="font-size:15px">개인정보 수집·이용에 동의합니다<span class="req">*</span><span class="opt-desc">수집 항목: 회사명·성명·직책·연락처·이메일 / 이용 목적: AI 도입 상담 및 정부 지원사업 안내 / 보유 기간: 목적 달성 후 관련 법령에 따라 파기. 동의를 거부하실 수 있으며, 이 경우 후속 상담 안내가 제한될 수 있습니다.</span></span>
+      </label>
+      <!-- 자동 제출 방지 위젯 (TURNSTILE_SITE_KEY 설정 시에만 표시) -->
+      <div id="turnstileBox" style="margin-top:16px"></div>
+      <!-- 허니팟: 사람에게는 보이지 않는 필드. 봇이 채우면 서버가 조용히 폐기한다. -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+        <label>이 항목은 비워두십시오
+          <input type="text" id="hp_website" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
     </div>
 
   </div>
 
   <!-- 오류 메시지는 navbar와 함께 활성 카드 안으로 이동한다(renderStep). 버튼 바로 위에 붙도록 여기에 둔다. -->
   <div class="navbar">
-    <div class="step-error" id="stepError">필수 항목(<span class="req">*</span>)을 모두 입력·선택해 주세요.</div>
+    <div class="step-error" id="stepError"></div>
     <div class="navbar-inner">
-      <button id="prevBtn" type="button">이전</button>
+      <button class="btn" id="prevBtn" type="button">이전</button>
       <!-- 라벨은 별도 span에 둔다 — 제출 중 스피너를 함께 넣어도 지워지지 않도록. -->
-      <button id="nextBtn" type="button" aria-busy="false">
+      <button class="btn" id="nextBtn" type="button" aria-busy="false">
         <span class="btn-spinner" aria-hidden="true"></span><span id="nextBtnLabel">설문 시작</span>
       </button>
     </div>
   </div>
 </main>
 
-<div class="wrap" id="resultScreen">
-  <h2>자동 접수에 실패했습니다</h2>
-  <p class="lead">일시적인 네트워크 문제로 응답을 저장하지 못했습니다. <strong>입력하신 내용은 아래에 그대로 보존되어 있습니다</strong> — 아래 방법 중 하나로 보내주시면 동일하게 접수됩니다.</p>
-  <div class="summary-box" id="summaryBox"></div>
-  <div class="action-row">
-    <button class="primary" id="mailBtn">이메일로 보내기</button>
-    <button id="copyBtn">응답 내용 복사</button>
-    <button id="downloadBtn">파일로 저장</button>
-  </div>
-  <div class="note-box">문의: 오르카아이티 AI사업부 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com (임시 — 발송 전 확정 필요)</div>
-</div>
-
+<!-- ══ 완료 화면 ══ -->
 <div class="wrap" id="thankYouScreen">
-  <h2>설문에 참여해 주셔서 진심으로 감사드립니다</h2>
-  <p class="lead">보내주신 의견은 오르카아이티 AI사업부가 소중히 검토한 후 순차적으로 연락드리겠습니다.</p>
-  <button id="restartBtn" type="button">처음으로 돌아가기</button>
+  <div class="card" style="text-align:center">
+    <div class="done-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2 class="qtitle">응답이 정상적으로 접수되었습니다</h2>
+    <div class="qmeta" style="margin-bottom:0">참여해 주셔서 감사합니다.</div>
+    <ul class="next-steps">
+      <li><span class="n">1</span><span>보내주신 응답을 오르카아이티 AI사업부가 검토합니다.</span></li>
+      <li><span class="n">2</span><span>선택하신 AI 활용 분야를 바탕으로, 필요하신 경우 담당자가 개별적으로 연락드립니다.</span></li>
+      <li><span class="n">3</span><span>2027년 정부 지원사업 공고가 나오면 관심을 표시해 주신 고객사께 안내드립니다.</span></li>
+    </ul>
+    <div class="done-contact">
+      <b>문의</b>오르카아이티 AI사업부 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com
+    </div>
+    <div class="restart-row"><button class="link-btn" id="restartBtn" type="button">처음으로 돌아가기</button></div>
+  </div>
 </div>
 
-<div class="scroll-nav" id="scrollNav">
-  <button id="scrollUpBtn" type="button" aria-label="위로 스크롤"><span class="arrow-icon">&#9650;</span><span class="arrow-label">위로</span></button>
-  <button id="scrollDownBtn" type="button" aria-label="아래로 스크롤"><span class="arrow-icon">&#9660;</span><span class="arrow-label">아래로</span></button>
+<!-- ══ 수동 접수(자동 접수 실패) 화면 ══ -->
+<div class="wrap" id="resultScreen">
+  <div class="card">
+    <h2 class="qtitle">자동 접수에 실패했습니다</h2>
+    <div class="qmeta">일시적인 네트워크 문제로 응답을 저장하지 못했습니다. <b style="color:var(--text)">입력하신 내용은 아래에 그대로 보존되어 있습니다</b> — 아래 방법 중 하나로 보내주시면 동일하게 접수됩니다.</div>
+    <div class="summary-box" id="summaryBox"></div>
+    <div class="action-row">
+      <button class="primary" id="mailBtn" type="button">이메일로 보내기</button>
+      <button id="copyBtn" type="button">응답 내용 복사</button>
+      <button id="downloadBtn" type="button">파일로 저장</button>
+    </div>
+    <div class="done-contact">
+      <b>문의</b>오르카아이티 AI사업부 정춘용 부사장 · 010-8590-3080 · spragon.yong@gmail.com
+      <span class="placeholder-note">임시 — 발송 전 확정 필요</span>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -620,35 +859,33 @@
   // 자동 접수 실패 시 안내할 수동 접수처. 실제 고객 발송 전 오르카아이티 공식 수신처로 교체 필요.
   const RECEIVER_EMAIL = "spragon.yong@gmail.com";
 
-  const STEP_ORDER = ["intro", "basic", "q1", "q2", "q3", "q4", "q5", "q6", "q6_1", "q7", "q7_1", "final"];
+  // 화면 순서. Q4는 세 개의 업무 영역 화면(q4a·q4b·q4c)으로 나뉘지만 설문상으로는 한 문항이다.
+  const STEP_ORDER = [
+    "intro", "basic1", "basic2",
+    "q1", "q2", "q3", "q4", "q5", "q6", "q6_1", "q7", "q7_1",
+    "final",
+  ];
+
+  // 진행 표시용 문항 번호.
+  const QUESTION_NO = {
+    q1: 1, q2: 2, q3: 3, q4: 4,
+    q5: 5, q6: 6, q6_1: 7, q7: 8, q7_1: 9,
+  };
+  // 조건부 문항(Q7-1)의 노출 여부와 무관하게 분모를 고정한다.
+  const TOTAL_QUESTIONS = 9;
 
   const wizard = document.getElementById("wizard");
   const resultScreen = document.getElementById("resultScreen");
   const railFill = document.getElementById("railFill");
   const railTrack = document.getElementById("railTrack");
-  const railStep = document.getElementById("railStep");
+  const railCount = document.getElementById("railCount");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
   const nextBtnLabel = document.getElementById("nextBtnLabel");
   const stepError = document.getElementById("stepError");
-  const navbarEl = document.querySelector(".navbar");
-  const scrollNav = document.getElementById("scrollNav");
-  const scrollUpBtn = document.getElementById("scrollUpBtn");
-  const scrollDownBtn = document.getElementById("scrollDownBtn");
+  const navbarEl = document.querySelector("main > .navbar");
 
   let currentStep = "intro";
-
-  function updateScrollNav() {
-    const overflow = document.documentElement.scrollHeight > window.innerHeight + 8;
-    scrollNav.style.display = overflow ? "flex" : "none";
-  }
-  scrollUpBtn.addEventListener("click", () => {
-    window.scrollBy({ top: -Math.round(window.innerHeight * 0.7), behavior: "smooth" });
-  });
-  scrollDownBtn.addEventListener("click", () => {
-    window.scrollBy({ top: Math.round(window.innerHeight * 0.7), behavior: "smooth" });
-  });
-  window.addEventListener("resize", updateScrollNav);
 
   function q7NeedsFollowup() {
     const el = document.querySelector('input[name="q7"]:checked');
@@ -659,52 +896,120 @@
     return STEP_ORDER.filter((id) => id !== "q7_1" || q7NeedsFollowup());
   }
 
-  // opt highlight + max enforcement
-  document.querySelectorAll(".opt").forEach((opt) => {
-    const input = opt.querySelector("input[type=radio], input[type=checkbox]");
-    input.addEventListener("change", () => {
-      if (input.type === "radio") {
-        document.querySelectorAll(`input[name="${input.name}"]`).forEach((sib) => {
-          sib.closest(".opt").classList.toggle("checked", sib.checked);
-        });
-      } else {
-        opt.classList.toggle("checked", input.checked);
-        enforceMax(input.name);
-      }
-      stepError.style.display = "none";
+  // ── 선택 상태 ────────────────────────────────────────────────────
+  // 네이티브 라디오/체크박스를 숨기고 표식을 직접 그리므로, 선택 여부를 .on 클래스로 반영한다.
+  function syncGroup(name) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach((el) => {
+      const box = el.closest(".opt, .chip");
+      if (box) box.classList.toggle("on", el.checked);
     });
-  });
-
-  // inline-text inputs (e.g. "기타", "대표제품") auto-select their parent option when the user types into them
-  document.querySelectorAll(".opt input.inline-text").forEach((textInput) => {
-    textInput.addEventListener("input", () => {
-      const opt = textInput.closest(".opt");
-      const mainInput = opt.querySelector('input[type="radio"], input[type="checkbox"]');
-      if (mainInput && textInput.value.trim() && !mainInput.checked) {
-        mainInput.checked = true;
-        mainInput.dispatchEvent(new Event("change"));
-      }
-      stepError.style.display = "none";
-    });
-  });
-
-  function enforceMax(name) {
-    const group = document.querySelector(`.opt-list[data-group="${name}"]`);
-    if (!group) return;
-    const max = parseInt(group.dataset.max || "0", 10);
-    if (!max) return;
-    const boxes = Array.from(group.querySelectorAll(`input[name="${name}"]`));
-    const checked = boxes.filter((b) => b.checked);
-    if (checked.length > max) {
-      checked[0].checked = false;
-      checked[0].closest(".opt").classList.remove("checked");
-    }
   }
 
-  document.querySelectorAll('input[type=text], input[type=email], input[type=tel]').forEach((el) => {
-    el.addEventListener("input", () => { stepError.style.display = "none"; });
+  document.querySelectorAll(".opt, .chip").forEach((box) => {
+    const input = box.querySelector('input[type="radio"], input[type="checkbox"]');
+    if (!input) return;
+    input.addEventListener("change", () => {
+      if (input.type === "radio") {
+        syncGroup(input.name);
+        syncReveals();
+      } else {
+        box.classList.toggle("on", input.checked);
+        if (input.name) enforceExclusive(input);
+        if (input.name === "q4") syncZoneCounts();
+      }
+      hideError();
+    });
   });
-  document.getElementById("q_consent").addEventListener("change", () => { stepError.style.display = "none"; });
+
+  // "아직 정하지 못했다" 같은 배타 선택지는 같은 문항의 다른 선택을 모두 해제한다.
+  // Q4는 화면 세 개에 걸쳐 있어서, 앞 화면에서 고른 항목이 눈앞에서 사라지지 않은 채 해제되면
+  // 응답자가 알아차릴 수 없다 → 하나라도 선택된 상태에서는 배타 선택지 자체를 감춘다.
+  function enforceExclusive(changed) {
+    const siblings = Array.from(document.querySelectorAll(`input[name="${changed.name}"]`));
+    if (!siblings.some((el) => el.dataset.exclusive === "true")) return;
+    if (changed.dataset.exclusive === "true" && changed.checked) {
+      siblings.forEach((el) => { if (el !== changed) el.checked = false; });
+    } else if (changed.checked) {
+      // 일반 항목을 고르면 배타 선택지는 해제한다(해제하지 않으면 응답에 함께 실려 나간다).
+      siblings.forEach((el) => { if (el.dataset.exclusive === "true") el.checked = false; });
+    }
+    syncGroup(changed.name);
+    syncExclusiveVisibility(changed.name);
+  }
+
+  /** 보조 입력칸(대표제품·ERP명 등)은 해당 보기를 고른 뒤에만 보여준다. */
+  function syncReveals() {
+    document.querySelectorAll("[data-reveal-when]").forEach((el) => {
+      const [name, list] = el.dataset.revealWhen.split(":");
+      const picked = radioVal(name);
+      el.hidden = !picked || list.split(",").indexOf(picked) === -1;
+    });
+  }
+
+  // ── Q4 접이식 영역 ───────────────────────────────────────────────
+  const zones = Array.from(document.querySelectorAll(".acc[data-zone]"));
+
+  zones.forEach((zone) => {
+    zone.querySelector(".acc-h").addEventListener("click", () => {
+      const open = !zone.classList.contains("open");
+      zone.classList.toggle("open", open);
+      zone.querySelector(".acc-h").setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
+
+  function openAllZones() {
+    zones.forEach((zone) => {
+      zone.classList.add("open");
+      zone.querySelector(".acc-h").setAttribute("aria-expanded", "true");
+    });
+  }
+
+  /** 접힌 영역에서 무엇을 골랐는지 머리말에 숫자로 보여준다. */
+  function syncZoneCounts() {
+    zones.forEach((zone) => {
+      const boxes = Array.from(zone.querySelectorAll('input[name="q4"]'));
+      const n = boxes.filter((el) => el.checked).length;
+      const out = zone.querySelector("[data-count]");
+      out.innerHTML = (n ? "<b>" + n + "</b>" : "0") + " / " + boxes.length;
+    });
+  }
+
+  /** 배타 선택지를 "아무것도 고르지 않은 상태"에서만 노출한다. */
+  function syncExclusiveVisibility(name) {
+    const siblings = Array.from(document.querySelectorAll(`input[name="${name}"]`));
+    const anyNormal = siblings.some((el) => el.dataset.exclusive !== "true" && el.checked);
+    siblings.forEach((el) => {
+      if (el.dataset.exclusive !== "true") return;
+      const box = el.closest(".opt");
+      if (box) box.hidden = anyNormal;
+    });
+  }
+
+  // "기타" 등 인라인 입력에 글자를 넣으면 해당 선택지를 자동으로 켠다.
+  document.querySelectorAll(".opt .inline-text").forEach((textInput) => {
+    textInput.addEventListener("input", () => {
+      const box = textInput.closest(".opt");
+      const main = box.querySelector('input[type="radio"], input[type="checkbox"]');
+      if (main && textInput.value.trim() && !main.checked) {
+        main.checked = true;
+        main.dispatchEvent(new Event("change"));
+      }
+      hideError();
+    });
+    // 인라인 입력을 누를 때 라벨 클릭으로 선택이 토글되지 않도록 한다.
+    textInput.addEventListener("click", (e) => e.preventDefault());
+  });
+
+  document.querySelectorAll('input[type=text], input[type=email], input[type=tel]').forEach((el) => {
+    el.addEventListener("input", hideError);
+  });
+  document.getElementById("q_consent").addEventListener("change", hideError);
+
+  function hideError() { stepError.style.display = "none"; }
+  function showError(msg) {
+    stepError.textContent = msg;
+    stepError.style.display = "block";
+  }
 
   function val(id) { return document.getElementById(id).value.trim(); }
   function radioVal(name) {
@@ -719,31 +1024,45 @@
     return el && el.value.trim() ? el.value.trim() : "";
   }
 
+  // ── 검증 ─────────────────────────────────────────────────────────
+  // 통과하면 빈 문자열, 막히면 사유를 그대로 화면에 띄울 문구로 돌려준다.
   const RADIO_STEPS = ["q1", "q2", "q3", "q6", "q6_1", "q7", "q7_1"];
-  const CHECKBOX_STEPS = ["q4", "q5"];
 
-  function validateStep(id) {
-    if (id === "intro") return true;
-    if (id === "final") return document.getElementById("q_consent").checked;
-    if (id === "basic") {
-      const requiredText = ["q_company", "q_name", "q_phone", "q_email"];
-      if (requiredText.some((fid) => !val(fid))) return false;
-      const requiredGroups = ["industry", "headcount", "revenue", "erp"];
-      return requiredGroups.every((g) => !!radioVal(g));
+  function stepProblem(id) {
+    if (id === "basic1") {
+      if (!val("q_company")) return "회사명을 입력해 주세요.";
+      if (!val("q_name")) return "담당자 성명을 입력해 주세요.";
+      return "";
     }
-    if (RADIO_STEPS.includes(id)) return !!radioVal(id);
-    if (CHECKBOX_STEPS.includes(id)) return checkboxVals(id).length > 0;
-    return true;
+    if (id === "basic2") {
+      if (!radioVal("industry")) return "업종을 선택해 주세요.";
+      if (!radioVal("headcount")) return "종업원 수를 선택해 주세요.";
+      if (!radioVal("erp")) return "현재 사용 중인 ERP를 선택해 주세요.";
+      return "";
+    }
+    // 세 영역과 마무리 항목을 합쳐 하나라도 골랐는지 확인한다.
+    if (id === "q4" && checkboxVals("q4").length === 0) {
+      openAllZones(); // 접힌 영역 때문에 무엇을 놓쳤는지 안 보이는 일이 없도록 모두 펼친다
+      return "관심 있는 분야를 하나 이상 선택해 주세요. 없으시면 '아직 정하지 못했다'를 골라주십시오.";
+    }
+    if (id === "q5" && checkboxVals("q5").length === 0) return "기대하시는 효과를 하나 이상 선택해 주세요.";
+    if (RADIO_STEPS.includes(id) && !radioVal(id)) return "보기 중 하나를 선택해 주세요.";
+    if (id === "final") {
+      if (!val("q_phone")) return "연락처를 입력해 주세요.";
+      if (!val("q_email")) return "이메일을 입력해 주세요.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("q_email"))) return "이메일 주소를 다시 확인해 주세요.";
+      if (!document.getElementById("q_consent").checked) return "개인정보 수집·이용에 동의해 주셔야 제출할 수 있습니다.";
+      return "";
+    }
+    return "";
   }
 
-  // 진행 표시는 조건부 문항(Q7-1)의 노출 여부와 무관하게 전체 문항 수를 분모로 쓴다.
-  // activeSteps() 길이를 쓰면 Q7에서 "9 / 9"였다가 Q7-1에서 "10 / 10"으로 분모가 늘어난다.
-  const TOTAL_QUESTIONS = STEP_ORDER.length - 2; // intro·final 제외 = 10
-
-  function stepLabel(id, position) {
+  // ── 화면 전환 ────────────────────────────────────────────────────
+  function stepLabel(id) {
     if (id === "intro") return "시작 전";
+    if (id === "basic1" || id === "basic2") return "회사 정보";
     if (id === "final") return "마지막 단계";
-    return "질문 " + position + " / " + TOTAL_QUESTIONS;
+    return "질문 <b>" + QUESTION_NO[id] + "</b> / " + TOTAL_QUESTIONS;
   }
 
   function renderStep(id) {
@@ -752,13 +1071,16 @@
     });
     const activeStepEl = document.querySelector(`.step[data-step="${id}"]`);
     if (activeStepEl) activeStepEl.appendChild(navbarEl);
-    stepError.style.display = "none";
+    hideError();
     currentStep = id;
+    syncExclusiveVisibility("q4");
+    syncReveals();
+    syncZoneCounts();
 
-    // 게이지·문항 번호는 STEP_ORDER 기준 위치를 쓴다(분모가 도중에 바뀌지 않도록).
+    // 게이지는 STEP_ORDER 기준 위치를 쓴다(분모가 도중에 바뀌지 않도록).
     const position = STEP_ORDER.indexOf(id);
     railFill.style.width = Math.round((position / (STEP_ORDER.length - 1)) * 100) + "%";
-    railStep.textContent = stepLabel(id, position);
+    railCount.innerHTML = stepLabel(id);
 
     // visibility:hidden으로 두면 자리가 남아 "설문 시작" 버튼이 가운데에서 밀린다 → 아예 빼낸다.
     prevBtn.style.display = id === "intro" ? "none" : "";
@@ -770,17 +1092,16 @@
     } else if (id === "final") {
       nextBtnLabel.textContent = "제출하기";
     } else {
-      const nextId = steps[idx + 1];
-      nextBtnLabel.textContent = nextId === "final" ? "설문 종료" : "다음";
+      nextBtnLabel.textContent = steps[idx + 1] === "final" ? "설문 종료" : "다음";
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
-    updateScrollNav();
   }
 
   nextBtn.addEventListener("click", () => {
-    if (!validateStep(currentStep)) {
-      stepError.style.display = "block";
+    const problem = stepProblem(currentStep);
+    if (problem) {
+      showError(problem);
       return;
     }
     if (currentStep === "final") {
@@ -788,8 +1109,7 @@
       return;
     }
     const steps = activeSteps();
-    const idx = steps.indexOf(currentStep);
-    renderStep(steps[idx + 1]);
+    renderStep(steps[steps.indexOf(currentStep) + 1]);
   });
 
   prevBtn.addEventListener("click", () => {
@@ -805,8 +1125,7 @@
       vals.map((v) => (v === "기타" && subfield(sub) ? "기타(" + subfield(sub) + ")" : v));
 
     let industry = radioVal("industry");
-    if (industry === "제조업" && subfield("industry_detail")) industry += "(" + subfield("industry_detail") + ")";
-    if (industry === "기타" && subfield("industry_etc")) industry += "(" + subfield("industry_etc") + ")";
+    if (industry && subfield("industry_detail")) industry += "(" + subfield("industry_detail") + ")";
 
     let erp = radioVal("erp");
     if (erp === "기타" && subfield("erp_etc")) erp += "(" + subfield("erp_etc") + ")";
@@ -997,9 +1316,8 @@
   function showManualFallback() {
     wizard.style.display = "none";
     document.getElementById("topRail").style.display = "none";
-    resultScreen.style.display = "block";
+    resultScreen.style.display = "flex";
     window.scrollTo({ top: 0, behavior: "smooth" });
-    updateScrollNav();
   }
 
   // 자동 접수 성공 시 직접 호출되기도 하고(마법사 화면이 아직 떠 있는 상태),
@@ -1008,9 +1326,8 @@
     wizard.style.display = "none";
     document.getElementById("topRail").style.display = "none";
     resultScreen.style.display = "none";
-    document.getElementById("thankYouScreen").style.display = "block";
+    document.getElementById("thankYouScreen").style.display = "flex";
     window.scrollTo({ top: 0, behavior: "smooth" });
-    updateScrollNav();
   }
 
   document.getElementById("mailBtn").addEventListener("click", () => {
@@ -1034,21 +1351,12 @@
   document.getElementById("downloadBtn").addEventListener("click", async () => {
     const text = document.getElementById("summaryBox").textContent;
     const filename = "AI도입의향조사_" + (val("q_company") || "응답") + ".txt";
-    if (window.claude && window.claude.downloads) {
-      try {
-        await window.claude.downloads.save({ filename, data: text });
-        showToast("파일 저장을 요청했습니다.");
-      } catch (e) {
-        showToast("파일 저장이 취소되었거나 실패했습니다.");
-      }
-    } else {
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     showThankYou();
   });
 
@@ -1059,10 +1367,13 @@
     document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach((el) => { el.value = ""; });
     document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((el) => {
       el.checked = false;
-      const opt = el.closest(".opt");
-      if (opt) opt.classList.remove("checked");
+      const box = el.closest(".opt, .chip");
+      if (box) box.classList.remove("on");
     });
     document.getElementById("q_consent").checked = false;
+    syncExclusiveVisibility("q4");
+    syncReveals();
+    syncZoneCounts();
     resetTurnstile();
     renderStep("intro");
     window.scrollTo({ top: 0, behavior: "smooth" });
