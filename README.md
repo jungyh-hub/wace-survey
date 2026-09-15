@@ -22,8 +22,9 @@ Vercel 환경변수에만 둔다. 설정·운영 절차는 [`Neon_배포가이�
 | [`web/index.html`](web/index.html) | 설문 페이지. `/api/submit` 으로 응답을 보낸다 |
 | [`web/admin.html`](web/admin.html) | 관리자 열람 페이지 (로그인 · 검색 · 상세 · CSV) |
 | [`web/api/`](web/api/) | 서버리스 함수 — `submit` 과 `admin/*`. 공용 코드는 `_lib/` |
-| [`web/db/schema.sql`](web/db/schema.sql) | `responses` 테이블 정의 (함수가 자동 생성하므로 참고용) |
+| [`db/schema.sql`](db/schema.sql) | `responses` 테이블 정의 (함수가 자동 생성하므로 참고용) |
 | [`Neon_배포가이드.md`](Neon_배포가이드.md) | **Neon 생성 → 환경변수 → 관리자 계정까지 전체 절차** |
+| [`tools/import-sheet.mjs`](tools/import-sheet.mjs) | (구) 구글 시트 내려받기 파일을 DB로 옮기는 일회성 도구 |
 | [`응답수집_AppsScript_코드.gs`](응답수집_AppsScript_코드.gs) | (구) 구글 시트 수집 엔드포인트 — 더 이상 쓰지 않음 |
 | [`응답수집_배포가이드_2026-08-06.md`](응답수집_배포가이드_2026-08-06.md) | (구) 시트 기반 배포 절차 |
 | [`크롬익스텐션_배포지시_프롬프트.md`](크롬익스텐션_배포지시_프롬프트.md) | 위 배포를 브라우저 에이전트에 시키기 위한 프롬프트 |

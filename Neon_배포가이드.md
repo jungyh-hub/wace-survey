@@ -29,7 +29,7 @@
    풀링 주소가 아니면 연결 수가 금방 바닥난다.
 
 테이블은 직접 만들 필요가 없다. 함수가 첫 요청에서 `CREATE TABLE IF NOT EXISTS` 로 만든다
-(스키마 원문은 [`web/db/schema.sql`](web/db/schema.sql)).
+(스키마 원문은 [`db/schema.sql`](db/schema.sql)).
 
 ---
 
@@ -130,8 +130,30 @@ node -e 'console.log(require("crypto").randomBytes(32).toString("base64url"))'
 [`응답수집_AppsScript_코드.gs`](응답수집_AppsScript_코드.gs) 와
 [`응답수집_배포가이드_2026-08-06.md`](응답수집_배포가이드_2026-08-06.md) 는 참고용으로 남겨 두었다.
 
-전환 전에 이미 시트에 쌓인 응답이 있다면 자동으로 옮겨가지 않는다. 필요하면 시트를 CSV로 내려
-Neon SQL Editor에서 `COPY` 로 적재한다.
+### 시트에 쌓여 있던 응답 옮기기
+
+[`tools/import-sheet.mjs`](tools/import-sheet.mjs) 가 시트 내려받기 파일(`.xlsx` / `.csv`)을 읽어 넣는다.
+
+```bash
+# 1) 무엇이 걸러지고 무엇이 들어가는지 먼저 본다 (아무것도 쓰지 않음)
+node tools/import-sheet.mjs ~/Downloads/AI도입의향조사_응답.xlsx --dry-run
+
+# 2) 확인했으면 실제로 넣는다
+DATABASE_URL='<Neon 주소>' node tools/import-sheet.mjs ~/Downloads/AI도입의향조사_응답.xlsx
+```
+
+- **여러 번 돌려도 안전하다.** 행 내용으로 결정적 `submission_id` 를 만들어 두 번째 실행부터는
+  `ON CONFLICT DO NOTHING` 에 걸린다.
+- 개발용 표식(`__…__`, `삭제요망`), `curl` 연결 확인, 자모·영문 난타, 회사명이 "테스트"인 행 등
+  **자명한 테스트 행만** 걸러낸다. 애매하면 남긴다 — 진짜 응답을 잘못 버리는 쪽이 훨씬 나쁘다.
+  판정을 무시하고 전부 넣으려면 `--keep-tests`.
+- 엑셀이 숫자로 바꿔버린 전화번호(`1.0E9`)를 `010-…` 형태로 되돌리고, 시각은 시트 시간대(KST)
+  기준으로 보정한다. 일련값을 UTC로 읽으면 9시간이 밀린다.
+- Q4 값은 원문 그대로 넣는다. 구 버전(8지)과 현 버전(19지)의 어휘가 다르지만, 응답자가 실제로
+  고른 값을 고쳐 쓰지 않는 편이 맞다고 보았다.
+
+2026-08-06~07 시트(19행)는 전부 개발·검증 중 만들어진 것이어서 **실제 고객 응답이 한 건도 없었다.**
+분류를 확인한 뒤 전량 폐기했고, 테이블은 빈 상태로 실제 발송을 기다리고 있다.
 
 ---
 
@@ -141,7 +163,7 @@ Neon SQL Editor에서 `COPY` 로 적재한다.
 
 1. [`web/index.html`](web/index.html) 의 `collectAnswers()` 반환 키
 2. [`web/api/_lib/validate.js`](web/api/_lib/validate.js) 의 `FIELDS` 배열
-3. [`web/db/schema.sql`](web/db/schema.sql) 과 [`web/api/_lib/db.js`](web/api/_lib/db.js) 의 컬럼,
+3. [`db/schema.sql`](db/schema.sql) 과 [`web/api/_lib/db.js`](web/api/_lib/db.js) 의 컬럼,
    그리고 [`web/api/submit.js`](web/api/submit.js) 의 INSERT 목록
 
 열을 추가할 때는 기존 테이블에 `ALTER TABLE responses ADD COLUMN ... text NOT NULL DEFAULT ''`
